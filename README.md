@@ -1,4 +1,5 @@
 # DailySales — Full Stack Sales & Budgeting Web Application
+By [Ezamamti Ronald Austine]
 
 > A full stack web application for small business owners to log daily sales, track investment costs, monitor profit and loss, and gain analytics insights on their goods and inventory.
 
