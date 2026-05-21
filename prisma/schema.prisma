@@ -8,12 +8,12 @@ datasource db {
 }
 
 model User {
-  id             String           @id @default(cuid())
-  name           String?
-  email          String           @unique
-  passwordHash   String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id           String   @id @default(cuid())
+  name         String?
+  email        String   @unique
+  passwordHash String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
 
   goods          Good[]
   saleEntries    SaleEntry[]
@@ -23,16 +23,18 @@ model User {
 }
 
 model Good {
-  id            String    @id @default(cuid())
+  id            String   @id @default(cuid())
   name          String
-  unitType      UnitType  @default(PIECE)
-  costPrice     Decimal   @db.Decimal(10, 2)
-  sellingPrice  Decimal   @db.Decimal(10, 2)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  unitType      UnitType @default(PIECE)
+  packagingDesc String?
+  costPrice     Decimal  @db.Decimal(10, 2)
+  sellingPrice  Decimal  @db.Decimal(10, 2)
+  currentStock  Decimal  @default(0) @db.Decimal(10, 3)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   saleEntries    SaleEntry[]
   investmentLogs InvestmentLog[]
@@ -44,6 +46,10 @@ enum UnitType {
   PIECE
   KILOGRAM
   LITRE
+  TON
+  DOZEN
+  BOX
+  TRAY
 }
 
 model SaleEntry {
@@ -54,27 +60,28 @@ model SaleEntry {
   note         String?
   createdAt    DateTime @default(now())
 
-  goodId  String
-  good    Good   @relation(fields: [goodId], references: [id], onDelete: Cascade)
+  goodId String
+  good   Good   @relation(fields: [goodId], references: [id], onDelete: Cascade)
 
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sale_entries")
 }
 
 model InvestmentLog {
-  id          String   @id @default(cuid())
-  amountSpent Decimal  @db.Decimal(10, 2)
-  note        String?
-  date        DateTime @db.Date
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  amountSpent   Decimal  @db.Decimal(10, 2)
+  quantityAdded Decimal? @db.Decimal(10, 3)
+  note          String?
+  date          DateTime @db.Date
+  createdAt     DateTime @default(now())
 
-  goodId  String?
-  good    Good?   @relation(fields: [goodId], references: [id], onDelete: SetNull)
+  goodId String?
+  good   Good?   @relation(fields: [goodId], references: [id], onDelete: SetNull)
 
-  userId  String
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("investment_logs")
 }
