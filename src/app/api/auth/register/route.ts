@@ -1,3 +1,4 @@
+// This API route handles user registration. It validates the incoming data, checks for existing users, hashes the password, and creates a new user in the database. It also returns appropriate responses based on the outcome of the registration process.
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/validations";
