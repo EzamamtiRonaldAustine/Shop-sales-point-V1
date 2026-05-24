@@ -3,6 +3,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/validations";
 import bcrypt from "bcryptjs";
+import { ZodError } from "zod";
+import { Prisma } from "@prisma/client";
 
 export async function POST(req: Request) {
   try {
@@ -34,7 +36,25 @@ export async function POST(req: Request) {
       { user: { id: newUser.id, email: newUser.email, name: newUser.name }, message: "User created successfully" },
       { status: 201 }
     );
-  } catch {
+  } catch (error) {
+    console.error("Registration error:", error);
+
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { message: "Invalid registration data", errors: error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError) {
+      if (error.code === "P2002") {
+        return NextResponse.json(
+          { message: "User with this email already exists" },
+          { status: 409 }
+        );
+      }
+    }
+
     return NextResponse.json(
       { message: "Something went wrong!" },
       { status: 500 }

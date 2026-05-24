@@ -9,9 +9,9 @@ This guide explains how to connect your application to a Neon Serverless Postgre
 
 ## 2. Get Your Connection String
 1. Once your project is created, navigate to the **Dashboard**.
-2. Under the **Connection Details** section, select **Prisma** from the dropdown.
-   - This does not create a separate database.
-   - It just gives you a Prisma-friendly `DATABASE_URL` for this app's Prisma client.
+2. Under the **Connection Details** section, copy the **direct** PostgreSQL connection string for migrations.
+   - If you pick the pooled or Prisma-flavoured URL, `npx prisma migrate dev` can fail with `P1001`.
+   - Keep the actual secret value in `.env.local`, not in this guide.
 3. Copy the provided `DATABASE_URL`. It should look something like this:
    `postgresql://[user]:[password]@[host]/[dbname]?sslmode=require`
 
@@ -33,7 +33,15 @@ Now that your database is connected, you need to push the Prisma schema to your 
 ```bash
 npx prisma db push
 ```
-*(Alternatively, if you are tracking migrations, you can run `npx prisma migrate dev`)*
+If you are tracking migrations, use this instead:
+
+```bash
+npx prisma migrate dev
+```
+
+Important: `migrate dev` should use the direct Neon connection string, not the pooled `-pooler` URL.
+
+If Prisma reports drift on a first-time setup, that usually means the Neon database already has tables but this repo does not yet have matching migration files. For a brand-new database with no data to keep, create a fresh empty database or use `npx prisma migrate reset`. If you need to preserve data, do not reset the schema; use `npx prisma db push` or create a baseline migration instead.
 
 ## 5. Generate Prisma Client
 Finally, ensure your Prisma client is up to date:
