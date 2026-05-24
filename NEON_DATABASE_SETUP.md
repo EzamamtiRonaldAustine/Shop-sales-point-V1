@@ -9,9 +9,16 @@ This guide explains how to connect your application to a Neon Serverless Postgre
 
 ## 2. Get Your Connection String
 1. Once your project is created, navigate to the **Dashboard**.
-2. Under the **Connection Details** section, make sure **Prisma** is selected from the dropdown (this ensures the connection string is properly formatted for Prisma).
+2. Under the **Connection Details** section, select **Prisma** from the dropdown.
+   - This does not create a separate database.
+   - It just gives you a Prisma-friendly `DATABASE_URL` for this app's Prisma client.
 3. Copy the provided `DATABASE_URL`. It should look something like this:
    `postgresql://[user]:[password]@[host]/[dbname]?sslmode=require`
+
+## What Prisma Means Here
+Prisma is the database client/ORM used by this project. In this repo, it is already wired up in [prisma/schema.prisma](prisma/schema.prisma) and reads the `DATABASE_URL` from your `.env.local` file.
+
+If you are setting up Neon for this project, you do not need to write Prisma code in Neon itself. You only need the connection string, then run Prisma commands locally.
 
 ## 3. Update Your Environment Variables
 1. Open your `.env.local` file (or create one if it doesn't exist by copying `.env.example`).
