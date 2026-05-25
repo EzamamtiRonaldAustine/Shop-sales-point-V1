@@ -1,3 +1,5 @@
+// client-side registration page for DailySales app using Next.js, React Hook Form, and NextAuth for authentication.
+// The page includes form validation with Zod and displays error messages for invalid input or unexpected errors. It also provides a link to the login page for existing users. After successful registration, it automatically logs the user in and redirects them to the dashboard.
 "use client";
 
 import { useState } from "react";
