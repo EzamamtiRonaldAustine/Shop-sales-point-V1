@@ -1,3 +1,6 @@
+// This is the main dashboard page that users see after signing in. It provides a welcome message and quick links to the key sections of the app: Goods, Sales, Investments, and Analytics. 
+// Each section is represented by a card with an icon, title, description, and a call-to-action to open that section. 
+// The design uses Tailwind CSS for styling and includes hover effects for interactivity.
 import Link from "next/link";
 import { BarChart3, DollarSign, Package, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";

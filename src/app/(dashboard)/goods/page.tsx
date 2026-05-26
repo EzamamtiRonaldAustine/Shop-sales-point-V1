@@ -1,3 +1,5 @@
+// This page displays the list of goods in the inventory. It fetches the goods data from the backend API and renders it in a table format. Each row shows the good's name, packaging details, unit type, stock remaining, cost price, selling price, and margin.
+// The page also includes a button to add a new good, which navigates to the New Good page. Each good has action buttons for editing and deleting, although the delete functionality is not implemented yet. The design is clean and uses Tailwind CSS for styling, with hover effects for interactivity.
 "use client";
 
 import { useState, useEffect } from "react";

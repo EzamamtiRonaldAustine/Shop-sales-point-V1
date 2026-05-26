@@ -1,3 +1,5 @@
+// This page allows users to add a new good to their inventory. It includes a back button to return to the goods list, a header with the page title and description, 
+// and the GoodForm component where users can input the details of the new good. The design is clean and user-friendly, using Tailwind CSS for styling and Lucide icons for visual cues.
 "use client";
 
 import { GoodForm } from "@/components/GoodForm";
