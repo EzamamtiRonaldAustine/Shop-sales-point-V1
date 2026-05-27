@@ -1,3 +1,5 @@
+// This page allows users to log new investments (purchases) and optionally restock inventory items in one step. 
+// It fetches the list of goods for selection, validates input using Zod, and provides feedback on success or error.
 "use client";
 
 import { useState, useEffect } from "react";

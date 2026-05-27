@@ -1,3 +1,5 @@
+// This is the root layout for the entire application. 
+// It sets up global styles, fonts, and metadata for the app.
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";

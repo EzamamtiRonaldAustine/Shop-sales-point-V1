@@ -1,3 +1,6 @@
+// This page allows users to log new sales and automatically update inventory stock.
+// It fetches the list of goods for selection, validates input using Zod, and provides feedback on success or error. 
+// The profit from each sale is calculated and displayed after logging a sale.
 "use client";
 
 import { useState, useEffect } from "react";

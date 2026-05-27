@@ -1,3 +1,5 @@
+// This is the main page of the application, serving as a welcome screen with links to resources for getting started with Next.js.
+//  It includes a call to action for deploying the app and accessing documentation, along with a simple layout and styling. 
 import Image from "next/image";
 
 export default function Home() {

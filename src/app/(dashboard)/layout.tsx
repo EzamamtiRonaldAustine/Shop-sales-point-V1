@@ -1,3 +1,5 @@
+// This layout component defines the overall structure of the dashboard, including a sidebar for navigation and a main content area where different pages (like sales, investments, etc.) will be rendered. 
+// The sidebar is imported from a separate component file, and the main content area is designed to be scrollable if the content exceeds the viewport height.
 import { Sidebar } from "@/components/Sidebar";
 
 export default function DashboardLayout({
