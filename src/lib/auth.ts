@@ -1,3 +1,5 @@
+// This file sets up NextAuth for authentication in a Next.js application. It uses the CredentialsProvider to allow users to sign in with an email and password. 
+// The passwords are hashed using bcrypt for security. The authentication flow includes validating user credentials against a database, managing JWT sessions, and defining custom pages for signing in. The callbacks ensure that user information is included in the JWT token and session data.
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";

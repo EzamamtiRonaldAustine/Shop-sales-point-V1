@@ -1,3 +1,6 @@
+// This middleware checks for the presence of NextAuth session cookies to determine if a user is authenticated. 
+// It protects the dashboard routes by redirecting unauthenticated users to the login page, and it also redirects authenticated users away from the login and registration pages to the dashboard. 
+// Additionally, it handles the root path by redirecting users based on their authentication status. The middleware is configured to run on all routes except for API routes, static assets, and the favicon. 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
