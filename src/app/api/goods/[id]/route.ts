@@ -3,8 +3,9 @@ import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import { goodSchema } from "@/lib/validations";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -12,7 +13,7 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
 
     const good = await db.good.findUnique({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
     });
@@ -27,8 +28,9 @@ export async function GET(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function PUT(req: Request, { params }: { params: { id: string } }) {
+export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -39,7 +41,7 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
 
     const updatedGood = await db.good.update({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
       data: validatedData,
@@ -51,8 +53,9 @@ export async function PUT(req: Request, { params }: { params: { id: string } }) 
   }
 }
 
-export async function DELETE(req: Request, { params }: { params: { id: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
+    const { id } = await params;
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -60,7 +63,7 @@ export async function DELETE(req: Request, { params }: { params: { id: string } 
 
     await db.good.delete({
       where: {
-        id: params.id,
+        id,
         userId: session.user.id,
       },
     });
