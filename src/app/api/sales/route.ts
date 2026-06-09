@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    const userId = session.user.id;
 
     const body = await req.json();
     const validatedData = saleSchema.parse(body);
@@ -52,7 +53,7 @@ export async function POST(req: Request) {
           saleDate: new Date(validatedData.saleDate),
           note: validatedData.note,
           totalRevenue: totalRevenue,
-          userId: session.user.id as string,
+          userId,
         },
       });
 

@@ -28,6 +28,7 @@ export async function POST(req: Request) {
     if (!session?.user?.id) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
+    const userId = session.user.id;
 
     const body = await req.json();
     const validatedData = investmentSchema.parse(body);
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
           data: {
             ...validatedData,
             date: new Date(validatedData.date),
-            userId: session.user.id as string,
+            userId,
           },
         });
 
@@ -60,7 +61,7 @@ export async function POST(req: Request) {
         data: {
           ...validatedData,
           date: new Date(validatedData.date),
-          userId: session.user.id as string,
+          userId,
         },
       });
       return NextResponse.json(newInvestment, { status: 201 });
