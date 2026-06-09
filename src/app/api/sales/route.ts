@@ -52,7 +52,7 @@ export async function POST(req: Request) {
           saleDate: new Date(validatedData.saleDate),
           note: validatedData.note,
           totalRevenue: totalRevenue,
-          userId: session.user.id,
+          userId: session.user.id as string,
         },
       });
 

@@ -39,7 +39,7 @@ export async function POST(req: Request) {
           data: {
             ...validatedData,
             date: new Date(validatedData.date),
-            userId: session.user.id,
+            userId: session.user.id as string,
           },
         });
 
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         data: {
           ...validatedData,
           date: new Date(validatedData.date),
-          userId: session.user.id,
+          userId: session.user.id as string,
         },
       });
       return NextResponse.json(newInvestment, { status: 201 });
