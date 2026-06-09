@@ -16,7 +16,7 @@ export function GoodForm() {
   const [error, setError] = useState<string | null>(null);
 
   const { register, handleSubmit, watch, formState: { errors } } = useForm<GoodInput>({
-    resolver: zodResolver(goodSchema),
+    resolver: zodResolver(goodSchema) as any,
     defaultValues: { unitType: "PIECE" }
   });
 

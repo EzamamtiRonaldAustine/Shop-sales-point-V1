@@ -22,7 +22,7 @@ export default function SalesPage() {
   const [lastProfit, setLastProfit] = useState<number | null>(null);
 
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<SaleInput>({
-    resolver: zodResolver(saleSchema),
+    resolver: zodResolver(saleSchema) as any,
     defaultValues: { saleDate: new Date().toISOString().split("T")[0] },
   });
 

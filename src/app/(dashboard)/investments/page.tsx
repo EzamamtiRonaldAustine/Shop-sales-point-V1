@@ -20,7 +20,7 @@ export default function InvestmentPage() {
   const [success, setSuccess] = useState(false);
 
   const { register, handleSubmit, formState: { errors }, reset, watch } = useForm<InvestmentInput>({
-    resolver: zodResolver(investmentSchema),
+    resolver: zodResolver(investmentSchema) as any,
     defaultValues: { date: new Date().toISOString().split("T")[0] },
   });
 
