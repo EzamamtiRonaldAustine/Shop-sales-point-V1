@@ -1,0 +1,82 @@
+import { redirect } from "next/navigation";
+import { db } from "@/lib/db";
+import { auth } from "@/lib/auth";
+import AnalyticsCharts from "@/components/analytics/AnalyticsCharts";
+
+export const metadata = {
+  title: "Analytics | DailySales",
+};
+
+export default async function AnalyticsPage() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    redirect("/login");
+  }
+
+  const userId = session.user.id;
+
+  // Fetch data
+  const [sales, investments] = await Promise.all([
+    db.saleEntry.findMany({
+      where: { userId },
+      include: { good: true },
+      orderBy: { saleDate: "asc" },
+    }),
+    db.investmentLog.findMany({
+      where: { userId },
+      orderBy: { date: "asc" },
+    }),
+  ]);
+
+  // Aggregate Total Revenue
+  const totalRevenue = sales.reduce((sum, sale) => sum + Number(sale.totalRevenue), 0);
+  
+  // Aggregate Total Investments
+  const totalInvestment = investments.reduce((sum, inv) => sum + Number(inv.amountSpent), 0);
+
+  // Aggregate Sales by Date (for Line Chart)
+  const salesByDateMap = new Map<string, number>();
+  sales.forEach((sale) => {
+    // Format date as YYYY-MM-DD
+    const dateStr = sale.saleDate.toISOString().split("T")[0];
+    const current = salesByDateMap.get(dateStr) || 0;
+    salesByDateMap.set(dateStr, current + Number(sale.totalRevenue));
+  });
+
+  const salesOverTime = Array.from(salesByDateMap.entries())
+    .map(([date, amount]) => ({ date, amount }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+
+  // Aggregate Top Selling Goods (for Bar Chart)
+  const goodsSalesMap = new Map<string, { name: string; totalRevenue: number; quantity: number }>();
+  sales.forEach((sale) => {
+    const goodId = sale.goodId;
+    const goodName = sale.good.name;
+    const current = goodsSalesMap.get(goodId) || { name: goodName, totalRevenue: 0, quantity: 0 };
+    goodsSalesMap.set(goodId, {
+      name: goodName,
+      totalRevenue: current.totalRevenue + Number(sale.totalRevenue),
+      quantity: current.quantity + Number(sale.quantity),
+    });
+  });
+
+  const topSellingGoods = Array.from(goodsSalesMap.values())
+    .sort((a, b) => b.totalRevenue - a.totalRevenue)
+    .slice(0, 5); // top 5
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h2 className="text-2xl font-bold tracking-tight">Analytics Dashboard</h2>
+        <p className="text-sm text-gray-500">Review performance, trends, and cash flow.</p>
+      </div>
+
+      <AnalyticsCharts 
+        totalRevenue={totalRevenue}
+        totalInvestment={totalInvestment}
+        salesOverTime={salesOverTime}
+        topSellingGoods={topSellingGoods}
+      />
+    </div>
+  );
+}
