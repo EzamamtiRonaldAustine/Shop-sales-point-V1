@@ -43,8 +43,8 @@ export default function GoodsCatalogue() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Goods Catalogue</h2>
-          <p className="text-sm text-gray-500">Manage your inventory, packaging, and pricing.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Goods Catalogue</h2>
+          <p className="text-sm text-gray-600 mt-1">Manage your inventory, packaging, and pricing.</p>
         </div>
         <Link href="/goods/new">
           <Button>

@@ -14,8 +14,8 @@ export default function NewGoodPage() {
           <ArrowLeft className="h-5 w-5" />
         </Link>
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">Add New Good</h2>
-          <p className="text-sm text-gray-500">Define a new item in your inventory catalogue.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Add New Good</h2>
+          <p className="text-sm text-gray-600 mt-1">Define a new item in your inventory catalogue.</p>
         </div>
       </div>
 

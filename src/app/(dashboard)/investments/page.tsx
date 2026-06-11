@@ -69,8 +69,8 @@ export default function InvestmentPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Investments & Restocking</h2>
-        <p className="text-sm text-gray-500">Log purchases and instantly update your inventory stock.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Investments & Restocking</h2>
+        <p className="text-sm text-gray-600 mt-1">Log purchases and instantly update your inventory stock.</p>
       </div>
 
       <Card>

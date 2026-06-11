@@ -86,8 +86,8 @@ export default function SalesPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Daily Sales</h2>
-        <p className="text-sm text-gray-500">Record a sale, track profits, and auto-deduct from stock.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Daily Sales</h2>
+        <p className="text-sm text-gray-600 mt-1">Record a sale, track profits, and auto-deduct from stock.</p>
       </div>
 
       <Card>

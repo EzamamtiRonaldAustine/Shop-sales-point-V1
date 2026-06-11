@@ -67,8 +67,8 @@ export default async function AnalyticsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Analytics Dashboard</h2>
-        <p className="text-sm text-gray-500">Review performance, trends, and cash flow.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analytics Dashboard</h2>
+        <p className="text-sm text-gray-600 mt-1">Review performance, trends, and cash flow.</p>
       </div>
 
       <AnalyticsCharts 
