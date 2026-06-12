@@ -2,9 +2,9 @@
 // The page includes form validation with Zod and displays error messages for invalid credentials or unexpected errors. It also provides a link to the registration page for new users.
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations";
@@ -12,11 +12,24 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import Link from "next/link";
+import { AlertCircle } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [timeoutMessage, setTimeoutMessage] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (searchParams.get("timeout") === "true") {
+      setTimeoutMessage(true);
+      // Clean up the URL
+      const url = new URL(window.location.href);
+      url.searchParams.delete("timeout");
+      window.history.replaceState({}, "", url.toString());
+    }
+  }, [searchParams]);
 
   const {
     register,
@@ -29,6 +42,7 @@ export default function LoginPage() {
   const onSubmit = async (data: LoginInput) => {
     setIsLoading(true);
     setError(null);
+    setTimeoutMessage(false);
 
     try {
       const result = await signIn("credentials", {
@@ -57,6 +71,22 @@ export default function LoginPage() {
           <h2 className="mt-6 text-3xl font-extrabold text-gray-900 tracking-tight">DailySales</h2>
           <p className="mt-2 text-sm text-gray-600">Track your business easily.</p>
         </div>
+
+        {timeoutMessage && (
+          <div className="rounded-md bg-yellow-50 p-4 border border-yellow-200">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <AlertCircle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium text-yellow-800">Session Expired</h3>
+                <div className="mt-2 text-sm text-yellow-700">
+                  <p>You have been logged out due to inactivity for your security. Please log in again.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <Card className="mt-8">
           <CardHeader>

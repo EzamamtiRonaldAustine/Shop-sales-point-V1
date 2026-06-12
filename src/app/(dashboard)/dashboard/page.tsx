@@ -47,10 +47,10 @@ export default function DashboardHome() {
           </p>
           <div className="flex flex-wrap gap-3 pt-2">
             <Link href="/goods">
-              <Button className="bg-white text-slate-950 hover:bg-slate-100">Open goods</Button>
+              <Button className="bg-white text-slate-950 hover:bg-slate-200 font-semibold transition-all">Open goods</Button>
             </Link>
             <Link href="/sales">
-              <Button variant="outline" className="border-slate-600 text-white hover:bg-slate-800">Record a sale</Button>
+              <Button variant="outline" className="border-slate-500 text-white hover:bg-slate-800 hover:text-white transition-all">Record a sale</Button>
             </Link>
           </div>
         </div>
