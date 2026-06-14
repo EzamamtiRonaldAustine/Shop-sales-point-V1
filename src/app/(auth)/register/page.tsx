@@ -77,7 +77,7 @@ export default function RegisterPage() {
         <Card className="mt-8">
           <CardHeader>
             <CardTitle className="text-2xl font-bold">Sign Up</CardTitle>
-            <CardDescription>Enter your details below to create your account</CardDescription>
+            <CardDescription>Enter your details below to create your account. Note: New accounts are created with STAFF privileges by default.</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">

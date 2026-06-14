@@ -7,19 +7,40 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  STAFF
+}
+
 model User {
-  id           String   @id @default(cuid())
+  id           String    @id @default(cuid())
   name         String?
-  email        String   @unique
+  email        String    @unique
   passwordHash String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  role         Role      @default(STAFF)
+  deletedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
   goods          Good[]
   saleEntries    SaleEntry[]
   investmentLogs InvestmentLog[]
+  loginSessions  LoginSession[]
 
   @@map("users")
+}
+
+model LoginSession {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loginAt   DateTime  @default(now())
+  logoutAt  DateTime?
+  ipAddress String?
+
+  @@map("login_sessions")
 }
 
 model Good {

@@ -1,5 +1,3 @@
-// This file sets up NextAuth for authentication in a Next.js application. It uses the CredentialsProvider to allow users to sign in with an email and password. 
-// The passwords are hashed using bcrypt for security. The authentication flow includes validating user credentials against a database, managing JWT sessions, and defining custom pages for signing in. The callbacks ensure that user information is included in the JWT token and session data.
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
@@ -23,7 +21,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize(credentials) {
+      async authorize(credentials, request) {
         const parsedCredentials = credentialsSchema.safeParse(credentials);
 
         if (!parsedCredentials.success) {
@@ -33,7 +31,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const { email, password } = parsedCredentials.data;
 
         const user = await db.user.findUnique({
-          where: { email },
+          where: { email, deletedAt: null },
         });
 
         if (!user || !user.passwordHash) {
@@ -43,10 +41,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, user.passwordHash);
 
         if (passwordsMatch) {
+          // Record login session
+          const ipAddress =
+            request?.headers?.get?.("x-forwarded-for") ??
+            request?.headers?.get?.("x-real-ip") ??
+            null;
+
+          await db.loginSession.create({
+            data: { userId: user.id, ipAddress },
+          });
+
           return {
             id: user.id,
             email: user.email,
             name: user.name,
+            role: user.role,
           };
         }
 
@@ -58,12 +67,16 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = (user as { role?: string }).role;
       }
       return token;
     },
     async session({ session, token }) {
       if (token && typeof token.id === "string") {
         session.user.id = token.id;
+      }
+      if (token && typeof token.role === "string") {
+        (session.user as { role?: string }).role = token.role;
       }
       return session;
     },

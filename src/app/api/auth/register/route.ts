@@ -1,4 +1,5 @@
-// This API route handles user registration. It validates the incoming data, checks for existing users, hashes the password, and creates a new user in the database. It also returns appropriate responses based on the outcome of the registration process.
+// Registration API: assigns STAFF role by default.
+// The very first user on the system gets SUPER_ADMIN automatically.
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { registerSchema } from "@/lib/validations";
@@ -11,10 +12,7 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { email, name, password } = registerSchema.parse(body);
 
-    const existingUser = await db.user.findUnique({
-      where: { email },
-    });
-
+    const existingUser = await db.user.findUnique({ where: { email } });
     if (existingUser) {
       return NextResponse.json(
         { user: null, message: "User with this email already exists" },
@@ -24,16 +22,19 @@ export async function POST(req: Request) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // First ever user becomes SUPER_ADMIN — everyone else gets STAFF
+    const userCount = await db.user.count();
+    const role = userCount === 0 ? "SUPER_ADMIN" : "STAFF";
+
     const newUser = await db.user.create({
-      data: {
-        email,
-        name,
-        passwordHash: hashedPassword,
-      },
+      data: { email, name, passwordHash: hashedPassword, role },
     });
 
     return NextResponse.json(
-      { user: { id: newUser.id, email: newUser.email, name: newUser.name }, message: "User created successfully" },
+      {
+        user: { id: newUser.id, email: newUser.email, name: newUser.name, role: newUser.role },
+        message: "User created successfully",
+      },
       { status: 201 }
     );
   } catch (error) {
@@ -46,18 +47,13 @@ export async function POST(req: Request) {
       );
     }
 
-    if (error instanceof Prisma.PrismaClientKnownRequestError) {
-      if (error.code === "P2002") {
-        return NextResponse.json(
-          { message: "User with this email already exists" },
-          { status: 409 }
-        );
-      }
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json(
+        { message: "User with this email already exists" },
+        { status: 409 }
+      );
     }
 
-    return NextResponse.json(
-      { message: "Something went wrong!" },
-      { status: 500 }
-    );
+    return NextResponse.json({ message: "Something went wrong!" }, { status: 500 });
   }
 }

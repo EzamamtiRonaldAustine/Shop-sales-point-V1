@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireRole } from "@/lib/requireRole";
 import AnalyticsCharts from "@/components/analytics/AnalyticsCharts";
 
 export const metadata = {
@@ -8,22 +8,18 @@ export const metadata = {
 };
 
 export default async function AnalyticsPage() {
-  const session = await auth();
-  if (!session?.user?.id) {
-    redirect("/login");
+  const { user, error } = await requireRole("ADMIN");
+  if (error) {
+    redirect("/dashboard"); // Unauthorized, send back to dashboard
   }
 
-  const userId = session.user.id;
-
-  // Fetch data
+  // Fetch all data across the shop since this is an ADMIN level view
   const [sales, investments] = await Promise.all([
     db.saleEntry.findMany({
-      where: { userId },
       include: { good: true },
       orderBy: { saleDate: "asc" },
     }),
     db.investmentLog.findMany({
-      where: { userId },
       orderBy: { date: "asc" },
     }),
   ]);
@@ -68,7 +64,7 @@ export default async function AnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold tracking-tight text-gray-900">Analytics Dashboard</h2>
-        <p className="text-sm text-gray-600 mt-1">Review performance, trends, and cash flow.</p>
+        <p className="text-sm text-gray-600 mt-1">Review shop-wide performance, trends, and cash flow.</p>
       </div>
 
       <AnalyticsCharts 

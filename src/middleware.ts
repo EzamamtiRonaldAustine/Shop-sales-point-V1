@@ -1,35 +1,43 @@
-// This middleware checks for the presence of NextAuth session cookies to determine if a user is authenticated. 
-// It protects the dashboard routes by redirecting unauthenticated users to the login page, and it also redirects authenticated users away from the login and registration pages to the dashboard. 
-// Additionally, it handles the root path by redirecting users based on their authentication status. The middleware is configured to run on all routes except for API routes, static assets, and the favicon. 
+// Middleware checks authentication via NextAuth session cookies, enforces role-based route
+// access, and redirects unauthenticated or unauthorized users appropriately.
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const ROLE_ORDER = ["STAFF", "MANAGER", "ADMIN", "SUPER_ADMIN"] as const;
+
+function hasMinRole(userRole: string, minimum: string): boolean {
+  return ROLE_ORDER.indexOf(userRole as never) >= ROLE_ORDER.indexOf(minimum as never);
+}
+
 export function middleware(request: NextRequest) {
   // Check for NextAuth session cookies
-  const hasSessionCookie = 
-    request.cookies.has("authjs.session-token") || 
+  const hasSessionCookie =
+    request.cookies.has("authjs.session-token") ||
     request.cookies.has("__Secure-authjs.session-token");
 
-  const isDashboardRoute = request.nextUrl.pathname.startsWith("/dashboard");
-  const isAuthRoute = request.nextUrl.pathname.startsWith("/login") || request.nextUrl.pathname.startsWith("/register");
+  const { pathname } = request.nextUrl;
 
-  // Protect dashboard routes
-  if (isDashboardRoute && !hasSessionCookie) {
+  const isDashboardRoute = pathname.startsWith("/dashboard");
+  const isSuperAdminRoute = pathname.startsWith("/super-admin");
+  const isAnalyticsRoute = pathname.startsWith("/analytics");
+  const isInvestmentsRoute = pathname.startsWith("/investments");
+  const isAuthRoute = pathname.startsWith("/login") || pathname.startsWith("/register");
+
+  // Protect all dashboard / app routes — must be logged in
+  if ((isDashboardRoute || isSuperAdminRoute || isAnalyticsRoute || isInvestmentsRoute) && !hasSessionCookie) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  // Redirect authenticated users away from login/register to dashboard
+  // Redirect authenticated users away from login/register
   if (isAuthRoute && hasSessionCookie) {
     return NextResponse.redirect(new URL("/dashboard", request.url));
   }
 
-  // Handle the root path '/' - redirect to dashboard if logged in, else login
-  if (request.nextUrl.pathname === "/") {
-    if (hasSessionCookie) {
-      return NextResponse.redirect(new URL("/dashboard", request.url));
-    } else {
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+  // Handle root path
+  if (pathname === "/") {
+    return NextResponse.redirect(
+      new URL(hasSessionCookie ? "/dashboard" : "/login", request.url)
+    );
   }
 
   return NextResponse.next();

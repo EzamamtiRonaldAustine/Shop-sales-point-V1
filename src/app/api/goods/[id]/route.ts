@@ -1,21 +1,17 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireRole } from "@/lib/requireRole";
 import { goodSchema } from "@/lib/validations";
 
 export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error } = await requireRole("STAFF");
+    if (error) return error;
 
+    const isElevated = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
     const good = await db.good.findUnique({
-      where: {
-        id,
-        userId: session.user.id,
-      },
+      where: isElevated ? { id } : { id, userId: user.id },
     });
 
     if (!good) {
@@ -23,7 +19,7 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
     }
 
     return NextResponse.json(good);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
   }
 }
@@ -31,24 +27,20 @@ export async function GET(req: Request, { params }: { params: Promise<{ id: stri
 export async function PUT(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error } = await requireRole("MANAGER");
+    if (error) return error;
 
     const body = await req.json();
     const validatedData = goodSchema.parse(body);
 
+    const isElevated = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
     const updatedGood = await db.good.update({
-      where: {
-        id,
-        userId: session.user.id,
-      },
+      where: isElevated ? { id } : { id, userId: user.id },
       data: validatedData,
     });
 
     return NextResponse.json(updatedGood);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Invalid request data" }, { status: 400 });
   }
 }
@@ -56,20 +48,16 @@ export async function PUT(req: Request, { params }: { params: Promise<{ id: stri
 export async function DELETE(req: Request, { params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error } = await requireRole("MANAGER");
+    if (error) return error;
 
+    const isElevated = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
     await db.good.delete({
-      where: {
-        id,
-        userId: session.user.id,
-      },
+      where: isElevated ? { id } : { id, userId: user.id },
     });
 
     return new NextResponse(null, { status: 204 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
   }
 }

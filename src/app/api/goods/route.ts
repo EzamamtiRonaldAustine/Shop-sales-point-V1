@@ -1,32 +1,30 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { auth } from "@/lib/auth";
+import { requireRole } from "@/lib/requireRole";
 import { goodSchema } from "@/lib/validations";
 
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error } = await requireRole("STAFF");
+    if (error) return error;
 
+    // ADMIN and SUPER_ADMIN see all goods; MANAGER and STAFF see their own
+    const isElevated = user.role === "ADMIN" || user.role === "SUPER_ADMIN";
     const goods = await db.good.findMany({
-      where: { userId: session.user.id },
+      where: isElevated ? {} : { userId: user.id },
       orderBy: { createdAt: "desc" },
     });
 
     return NextResponse.json(goods);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Something went wrong" }, { status: 500 });
   }
 }
 
 export async function POST(req: Request) {
   try {
-    const session = await auth();
-    if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    const { user, error } = await requireRole("MANAGER");
+    if (error) return error;
 
     const body = await req.json();
     const validatedData = goodSchema.parse(body);
@@ -34,12 +32,12 @@ export async function POST(req: Request) {
     const newGood = await db.good.create({
       data: {
         ...validatedData,
-        userId: session.user.id,
+        userId: user.id,
       },
     });
 
     return NextResponse.json(newGood, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ message: "Invalid request data" }, { status: 400 });
   }
 }
