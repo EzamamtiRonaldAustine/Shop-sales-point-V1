@@ -3,6 +3,7 @@
 import { Sidebar } from "@/components/Sidebar";
 import { AutoLogout } from "@/components/AutoLogout";
 import { auth } from "@/lib/auth";
+import ChangePasswordPopup from "@/components/ChangePasswordPopup";
 
 export default async function DashboardLayout({
   children,
@@ -11,15 +12,21 @@ export default async function DashboardLayout({
 }) {
   const session = await auth();
   const role = (session?.user as any)?.role || "STAFF";
+  const requiresPasswordChange = (session?.user as any)?.requiresPasswordChange;
 
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <AutoLogout />
       <Sidebar role={role} />
-      <div className="flex flex-col flex-1 overflow-hidden">
+      <div className="flex flex-col flex-1 overflow-hidden relative">
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
           {children}
         </main>
+        {requiresPasswordChange && (
+          <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center">
+            <ChangePasswordPopup />
+          </div>
+        )}
       </div>
     </div>
   );

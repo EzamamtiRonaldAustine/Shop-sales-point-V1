@@ -56,6 +56,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             email: user.email,
             name: user.name,
             role: user.role,
+            requiresPasswordChange: user.requiresPasswordChange,
           };
         }
 
@@ -64,10 +65,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger, session }) {
       if (user) {
         token.id = user.id;
-        token.role = (user as { role?: string }).role;
+        token.role = (user as any).role;
+        token.requiresPasswordChange = (user as any).requiresPasswordChange;
+      }
+      if (trigger === "update" && session?.requiresPasswordChange !== undefined) {
+        token.requiresPasswordChange = session.requiresPasswordChange;
       }
       return token;
     },
@@ -76,7 +81,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         session.user.id = token.id;
       }
       if (token && typeof token.role === "string") {
-        (session.user as { role?: string }).role = token.role;
+        (session.user as any).role = token.role;
+      }
+      if (token && typeof token.requiresPasswordChange === "boolean") {
+        (session.user as any).requiresPasswordChange = token.requiresPasswordChange;
       }
       return session;
     },
