@@ -12,8 +12,10 @@ import { Input } from "@/components/ui/Input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/Card";
 import { TrendingUp, ShoppingCart } from "lucide-react";
 
+// Define the Good type to represent the structure of goods fetched from the API, including details like name, unit type, current stock, and pricing information.
 type Good = { id: string; name: string; unitType: string; packagingDesc: string | null; currentStock: number; sellingPrice: number; costPrice: number };
 
+// The SalesPage component manages the state for goods, loading status, errors, success messages, and profit calculation. It uses React Hook Form for form handling and Zod for validation. When a sale is submitted, it checks if the quantity exceeds current stock, then sends a POST request to log the sale and updates the UI accordingly.
 export default function SalesPage() {
   const [goods, setGoods] = useState<Good[]>([]);
   const [isLoading, setIsLoading] = useState(false);

@@ -5,6 +5,7 @@ import { AutoLogout } from "@/components/AutoLogout";
 import { auth } from "@/lib/auth";
 import ChangePasswordPopup from "@/components/ChangePasswordPopup";
 
+// The DashboardLayout component is an async function that retrieves the user's session information to determine their role and whether they need to change their password. It then renders the layout with the sidebar and main content area, and conditionally displays a password change popup if required.
 export default async function DashboardLayout({
   children,
 }: {
@@ -14,6 +15,7 @@ export default async function DashboardLayout({
   const role = (session?.user as any)?.role || "STAFF";
   const requiresPasswordChange = (session?.user as any)?.requiresPasswordChange;
 
+  // The layout consists of a flex container that takes up the full height of the screen. The sidebar is rendered on the left, and the main content area is on the right. If the user needs to change their password, a semi-transparent overlay with a password change popup is displayed on top of the main content.
   return (
     <div className="flex h-screen overflow-hidden bg-gray-50">
       <AutoLogout />
