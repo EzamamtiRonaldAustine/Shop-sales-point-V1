@@ -1,6 +1,13 @@
 import { type Role } from "@prisma/client";
 import { NextAuthConfig } from "next-auth";
 
+/**
+ * NextAuth Type Augmentation
+ * 
+ * We extend the built-in NextAuth types (User, Session, and JWT) to include 
+ * our custom database fields. This ensures strict TypeScript inference across 
+ * the application when accessing the user's role and password status.
+ */
 declare module "next-auth" {
   interface User {
     role?: Role;

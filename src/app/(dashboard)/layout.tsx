@@ -24,6 +24,14 @@ export default async function DashboardLayout({
         <main className="flex-1 overflow-y-auto p-6 md:p-8">
           {children}
         </main>
+        
+        {/* 
+          SECURITY INTERCEPT:
+          If the current user has the `requiresPasswordChange` flag set to true (e.g., initial Super Admin login),
+          we render a full-screen, non-dismissible backdrop containing the ChangePasswordPopup.
+          This overlay sits above all other dashboard content (z-50) and blocks all interaction
+          with the underlying application until the default password is changed.
+        */}
         {requiresPasswordChange && (
           <div className="absolute inset-0 bg-gray-900/50 backdrop-blur-sm z-50 flex items-center justify-center">
             <ChangePasswordPopup />
