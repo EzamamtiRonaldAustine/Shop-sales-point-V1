@@ -16,7 +16,10 @@ const credentialsSchema = z.object({
  * We use a JWT strategy and a Credentials provider since users log in with email/password.
  */
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { strategy: "jwt" },
+  session: { 
+    strategy: "jwt",
+    maxAge: 4 * 60 * 60, // 4 hours in seconds (forces re-login)
+  },
   pages: {
     signIn: "/login",
   },
