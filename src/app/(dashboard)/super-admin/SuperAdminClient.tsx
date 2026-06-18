@@ -105,16 +105,16 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
 
   return (
     <div className="space-y-6">
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 dark:border-slate-800">
         <button
-          className={`py-2 px-4 font-medium text-sm flex items-center ${activeTab === "users" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+          className={`py-2 px-4 font-medium text-sm flex items-center ${activeTab === "users" ? "border-b-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
           onClick={() => setActiveTab("users")}
         >
           <Shield className="mr-2 h-4 w-4" />
           User Management
         </button>
         <button
-          className={`py-2 px-4 font-medium text-sm flex items-center ${activeTab === "sessions" ? "border-b-2 border-blue-600 text-blue-600" : "text-gray-500 hover:text-gray-700"}`}
+          className={`py-2 px-4 font-medium text-sm flex items-center ${activeTab === "sessions" ? "border-b-2 border-blue-600 text-blue-600 dark:border-blue-500 dark:text-blue-400" : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"}`}
           onClick={() => setActiveTab("sessions")}
         >
           <History className="mr-2 h-4 w-4" />
@@ -132,7 +132,7 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-700 border-b border-gray-200">
+                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-slate-800">
                   <tr>
                     <th className="px-4 py-3">Name</th>
                     <th className="px-4 py-3">Email</th>
@@ -142,7 +142,7 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
                     <th className="px-4 py-3 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                   {users.map((u) => {
                     const isSelf = u.id === currentUser.id;
                     const isDeleted = !!u.deletedAt;
@@ -156,17 +156,17 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
                     }
 
                     return (
-                      <tr key={u.id} className={isDeleted ? "bg-red-50" : "hover:bg-gray-50"}>
-                        <td className="px-4 py-3 font-medium text-gray-900">
-                          {u.name || "—"} {isSelf && <span className="text-xs text-blue-600 ml-2">(You)</span>}
+                      <tr key={u.id} className={isDeleted ? "bg-red-50 dark:bg-red-950/30" : "hover:bg-gray-50 dark:hover:bg-slate-800/50"}>
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                          {u.name || "—"} {isSelf && <span className="text-xs text-blue-600 dark:text-blue-400 ml-2">(You)</span>}
                         </td>
-                        <td className="px-4 py-3 text-gray-600">{u.email}</td>
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{u.email}</td>
                         <td className="px-4 py-3">
                           <select
                             value={u.role}
                             disabled={isSelf || isDeleted}
                             onChange={(e) => handleRoleChange(u.id, e.target.value)}
-                            className="bg-white border border-gray-300 text-gray-900 text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-1"
+                            className="bg-white dark:bg-slate-950 border border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-100 text-xs rounded-md focus:ring-blue-500 focus:border-blue-500 block w-full p-1 transition-colors"
                           >
                             <option value="STAFF">Staff</option>
                             <option value="MANAGER">Manager</option>
@@ -176,16 +176,16 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
                         </td>
                         <td className="px-4 py-3">
                           {isDeleted ? (
-                            <span className="inline-flex items-center rounded-md bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                            <span className="inline-flex items-center rounded-md bg-red-100 dark:bg-red-900/30 px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400">
                               Deleted (Purge in {daysUntilPurge}d)
                             </span>
                           ) : (
-                            <span className="inline-flex items-center rounded-md bg-green-100 px-2 py-1 text-xs font-medium text-green-700">
+                            <span className="inline-flex items-center rounded-md bg-green-100 dark:bg-green-900/30 px-2 py-1 text-xs font-medium text-green-700 dark:text-green-400">
                               Active
                             </span>
                           )}
                         </td>
-                        <td className="px-4 py-3 text-gray-500 text-xs">
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
                           {u.loginSessions?.length > 0
                             ? new Date(u.loginSessions[0].loginAt).toLocaleString()
                             : "Never"}
@@ -219,7 +219,7 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
           <CardContent>
             <div className="overflow-x-auto">
               <table className="w-full text-sm text-left">
-                <thead className="bg-gray-50 text-gray-700 border-b border-gray-200">
+                <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-gray-300 border-b border-gray-200 dark:border-slate-800">
                   <tr>
                     <th className="px-4 py-3">User</th>
                     <th className="px-4 py-3">Role</th>
@@ -227,23 +227,23 @@ export default function SuperAdminClient({ currentUser }: { currentUser: { id: s
                     <th className="px-4 py-3">IP Address</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100">
+                <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
                   {sessions.length === 0 ? (
-                    <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500">No login history found.</td></tr>
+                    <tr><td colSpan={4} className="px-4 py-8 text-center text-gray-500 dark:text-gray-400">No login history found.</td></tr>
                   ) : (
                     sessions.map((s) => (
-                      <tr key={s.id} className="hover:bg-gray-50">
-                        <td className="px-4 py-3 font-medium text-gray-900">{s.user.name} <span className="text-gray-500 font-normal">({s.user.email})</span></td>
+                      <tr key={s.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50">
+                        <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{s.user.name} <span className="text-gray-500 dark:text-gray-400 font-normal">({s.user.email})</span></td>
                         <td className="px-4 py-3">
-                          <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                          <span className="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-900/30 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/30">
                             {s.user.role}
                           </span>
                         </td>
-                        <td className="px-4 py-3 text-gray-600 flex items-center">
+                        <td className="px-4 py-3 text-gray-600 dark:text-gray-400 flex items-center">
                           <Clock className="w-3 h-3 mr-1" />
                           {new Date(s.loginAt).toLocaleString()}
                         </td>
-                        <td className="px-4 py-3 text-gray-500 font-mono text-xs">{s.ipAddress || "Unknown"}</td>
+                        <td className="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">{s.ipAddress || "Unknown"}</td>
                       </tr>
                     ))
                   )}

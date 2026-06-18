@@ -66,10 +66,10 @@ export function GoodForm() {
 
           <div className="grid grid-cols-2 gap-4">
             <div className="flex flex-col gap-1 w-full">
-              <label className="text-sm font-medium text-gray-700">Base Unit Type</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Base Unit Type</label>
               <select
                 {...register("unitType")}
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
               >
                 {unitTypes.map(unit => (
                   <option key={unit} value={unit}>{unit}</option>

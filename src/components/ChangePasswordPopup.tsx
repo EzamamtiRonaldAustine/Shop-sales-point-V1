@@ -79,13 +79,13 @@ function ChangePasswordForm() {
   };
 
   return (
-    <Card className="w-full max-w-md shadow-2xl border-orange-200">
+    <Card className="w-full max-w-md shadow-2xl border-orange-200 dark:border-orange-900/50">
       <CardHeader className="text-center space-y-2">
-        <div className="mx-auto bg-orange-100 p-3 rounded-full w-fit">
-          <ShieldAlert className="w-8 h-8 text-orange-600" />
+        <div className="mx-auto bg-orange-100 dark:bg-orange-900/30 p-3 rounded-full w-fit">
+          <ShieldAlert className="w-8 h-8 text-orange-600 dark:text-orange-500" />
         </div>
-        <CardTitle className="text-2xl font-bold">Action Required</CardTitle>
-        <CardDescription>
+        <CardTitle className="text-2xl font-bold dark:text-white">Action Required</CardTitle>
+        <CardDescription className="dark:text-gray-400">
           For security reasons, you must change your one-time default password before accessing the dashboard.
         </CardDescription>
       </CardHeader>

@@ -69,17 +69,17 @@ export default function InvestmentPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Investments & Restocking</h2>
-        <p className="text-sm text-gray-600 mt-1">Log purchases and instantly update your inventory stock.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Investments & Restocking</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Log purchases and instantly update your inventory stock.</p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center">
-            <DollarSign className="mr-2 h-5 w-5 text-blue-600" />
+          <CardTitle className="flex items-center dark:text-white">
+            <DollarSign className="mr-2 h-5 w-5 text-blue-600 dark:text-blue-500" />
             New Investment Entry
           </CardTitle>
-          <CardDescription>
+          <CardDescription className="dark:text-gray-400">
             Select a good to restock it, or leave it unselected for a general business expense.
           </CardDescription>
         </CardHeader>
@@ -87,10 +87,10 @@ export default function InvestmentPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
             <div className="flex flex-col gap-1 w-full">
-              <label className="text-sm font-medium text-gray-700">Good / Item (Optional)</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Good / Item (Optional)</label>
               <select
                 {...register("goodId")}
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
               >
                 <option value="">-- General Expense --</option>
                 {goods.map((good) => (
@@ -120,7 +120,7 @@ export default function InvestmentPage() {
             </div>
 
             {selectedGoodId && (
-              <div className="p-4 bg-blue-50 rounded-lg border border-blue-100">
+              <div className="p-4 bg-blue-50 dark:bg-blue-950/30 rounded-lg border border-blue-100 dark:border-blue-900/50 transition-colors">
                 <Input
                   label={`Quantity Added to Stock (${selectedGood?.unitType || "Units"})`}
                   type="number"
@@ -129,7 +129,7 @@ export default function InvestmentPage() {
                   {...register("quantityAdded")}
                   error={errors.quantityAdded?.message}
                 />
-                <p className="text-xs text-blue-600 mt-2">
+                <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
                   This will automatically increase your current stock for {selectedGood?.name}.
                 </p>
               </div>
@@ -142,8 +142,8 @@ export default function InvestmentPage() {
               error={errors.note?.message}
             />
 
-            {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
-            {success && <div className="text-green-600 text-sm font-medium bg-green-50 p-3 rounded-md">Investment logged successfully! Stock updated.</div>}
+            {error && <div className="text-red-500 dark:text-red-400 text-sm font-medium">{error}</div>}
+            {success && <div className="text-green-600 dark:text-green-400 text-sm font-medium bg-green-50 dark:bg-green-950/50 p-3 rounded-md transition-colors">Investment logged successfully! Stock updated.</div>}
 
             <Button type="submit" disabled={isLoading} className="w-full">
               <PlusCircle className="mr-2 h-4 w-4" />

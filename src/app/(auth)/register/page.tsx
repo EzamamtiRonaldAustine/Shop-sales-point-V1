@@ -67,11 +67,11 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-950 px-4 py-12 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 tracking-tight">Create an account</h2>
-          <p className="mt-2 text-sm text-gray-600">Start tracking your business today.</p>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">Create an account</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Start tracking your business today.</p>
         </div>
 
         <Card className="mt-8">
@@ -107,7 +107,7 @@ export default function RegisterPage() {
               />
 
               {error && (
-                <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 font-medium">
+                <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-500 dark:text-red-400 font-medium">
                   {error}
                 </div>
               )}
@@ -118,8 +118,8 @@ export default function RegisterPage() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-gray-500">Already have an account? </span>
-              <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors">
+              <span className="text-gray-500 dark:text-gray-400">Already have an account? </span>
+              <Link href="/login" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                 Sign in
               </Link>
             </div>

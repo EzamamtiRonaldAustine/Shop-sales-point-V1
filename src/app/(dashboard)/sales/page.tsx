@@ -88,14 +88,14 @@ export default function SalesPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight text-gray-900">Daily Sales</h2>
-        <p className="text-sm text-gray-600 mt-1">Record a sale, track profits, and auto-deduct from stock.</p>
+        <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Daily Sales</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Record a sale, track profits, and auto-deduct from stock.</p>
       </div>
 
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center">
-            <TrendingUp className="mr-2 h-5 w-5 text-green-600" />
+            <TrendingUp className="mr-2 h-5 w-5 text-green-600 dark:text-green-500" />
             New Sale Entry
           </CardTitle>
           <CardDescription>
@@ -106,10 +106,10 @@ export default function SalesPage() {
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             
             <div className="flex flex-col gap-1 w-full">
-              <label className="text-sm font-medium text-gray-700">Good / Item</label>
+              <label className="text-sm font-medium text-gray-700 dark:text-gray-300">Good / Item</label>
               <select
                 {...register("goodId")}
-                className="flex h-10 w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="flex h-10 w-full rounded-md border border-gray-300 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
               >
                 <option value="">-- Select Item to Sell --</option>
                 {goods.map((good) => (
@@ -122,14 +122,14 @@ export default function SalesPage() {
             </div>
 
             {selectedGood && (
-              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg border border-gray-100 mb-4">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-slate-900/50 rounded-lg border border-gray-100 dark:border-slate-800 mb-4 transition-colors">
                  <div>
-                    <p className="text-xs text-gray-500 font-medium">Current Stock</p>
-                    <p className="text-lg font-bold text-gray-900">{selectedGood.currentStock} <span className="text-sm font-normal text-gray-500">{selectedGood.unitType}</span></p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Current Stock</p>
+                    <p className="text-lg font-bold text-gray-900 dark:text-white">{selectedGood.currentStock} <span className="text-sm font-normal text-gray-500 dark:text-gray-400">{selectedGood.unitType}</span></p>
                  </div>
                  <div>
-                    <p className="text-xs text-gray-500 font-medium">Selling Price</p>
-                    <p className="text-lg font-bold text-green-600">${selectedGood.sellingPrice}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Selling Price</p>
+                    <p className="text-lg font-bold text-green-600 dark:text-green-400">${selectedGood.sellingPrice}</p>
                  </div>
               </div>
             )}
@@ -153,9 +153,9 @@ export default function SalesPage() {
             </div>
 
             {selectedGood && quantitySold > 0 && (
-              <div className="flex justify-between items-center p-3 bg-green-50 rounded border border-green-100 text-sm">
-                 <span className="font-medium text-green-800">Auto-calculated Revenue:</span>
-                 <span className="font-bold text-green-700">${(selectedGood.sellingPrice * (quantitySold || 0)).toFixed(2)}</span>
+              <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/30 rounded border border-green-100 dark:border-green-900/50 text-sm transition-colors">
+                 <span className="font-medium text-green-800 dark:text-green-400">Auto-calculated Revenue:</span>
+                 <span className="font-bold text-green-700 dark:text-green-300">${(selectedGood.sellingPrice * (quantitySold || 0)).toFixed(2)}</span>
               </div>
             )}
 
@@ -166,16 +166,16 @@ export default function SalesPage() {
               error={errors.note?.message}
             />
 
-            {error && <div className="text-red-500 text-sm font-medium">{error}</div>}
+            {error && <div className="text-red-500 dark:text-red-400 text-sm font-medium">{error}</div>}
             
             {success && (
-              <div className="text-green-800 text-sm font-medium bg-green-100 p-4 rounded-md flex flex-col gap-1">
+              <div className="text-green-800 dark:text-green-400 text-sm font-medium bg-green-100 dark:bg-green-950/50 p-4 rounded-md flex flex-col gap-1 transition-colors">
                 <div className="flex items-center"><ShoppingCart className="w-4 h-4 mr-2"/> Sale logged successfully! Stock deducted.</div>
-                {lastProfit !== null && <div className="text-green-700 ml-6 text-xs">Profit generated from this sale: <strong>${lastProfit.toFixed(2)}</strong></div>}
+                {lastProfit !== null && <div className="text-green-700 dark:text-green-500 ml-6 text-xs">Profit generated from this sale: <strong>${lastProfit.toFixed(2)}</strong></div>}
               </div>
             )}
 
-            <Button type="submit" disabled={isLoading} className="w-full bg-green-600 hover:bg-green-700 focus:ring-green-500">
+            <Button type="submit" disabled={isLoading} className="w-full bg-green-600 hover:bg-green-700 focus:ring-green-500 dark:bg-green-600 dark:hover:bg-green-700">
               {isLoading ? "Saving..." : "Log Sale"}
             </Button>
           </form>

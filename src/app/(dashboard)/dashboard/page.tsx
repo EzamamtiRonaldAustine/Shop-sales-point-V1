@@ -85,16 +85,16 @@ export default async function DashboardHome() {
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
         {allowedLinks.map((item) => (
           <Link key={item.title} href={item.href} className="group block h-full">
-            <Card className="h-full border-slate-200 transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-lg">
+            <Card className="h-full transition-all duration-200 group-hover:-translate-y-1 group-hover:shadow-lg dark:group-hover:shadow-slate-900/50">
               <CardHeader>
-                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 text-white">
+                <div className="mb-3 flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 dark:bg-slate-800 text-white">
                   <item.icon className="h-5 w-5" />
                 </div>
                 <CardTitle className="text-lg">{item.title}</CardTitle>
                 <CardDescription>{item.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <span className="text-sm font-semibold text-slate-900 group-hover:text-slate-700">
+                <span className="text-sm font-semibold text-slate-900 dark:text-slate-100 group-hover:text-slate-700 dark:group-hover:text-white transition-colors">
                   Open section →
                 </span>
               </CardContent>

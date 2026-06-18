@@ -17,7 +17,7 @@ export default async function DashboardLayout({
 
   // The layout consists of a flex container that takes up the full height of the screen. The sidebar is rendered on the left, and the main content area is on the right. If the user needs to change their password, a semi-transparent overlay with a password change popup is displayed on top of the main content.
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-50">
+    <div className="flex h-screen overflow-hidden bg-gray-50 dark:bg-slate-950 text-gray-900 dark:text-gray-100 transition-colors duration-200">
       <AutoLogout />
       <Sidebar role={role} />
       <div className="flex flex-col flex-1 overflow-hidden relative">

@@ -32,14 +32,14 @@ function TimeoutBanner() {
   if (!show) return null;
 
   return (
-    <div className="rounded-md bg-yellow-50 p-4 border border-yellow-200">
+    <div className="rounded-md bg-yellow-50 dark:bg-yellow-900/30 p-4 border border-yellow-200 dark:border-yellow-700/50">
       <div className="flex">
         <div className="flex-shrink-0">
-          <AlertCircle className="h-5 w-5 text-yellow-400" aria-hidden="true" />
+          <AlertCircle className="h-5 w-5 text-yellow-400 dark:text-yellow-500" aria-hidden="true" />
         </div>
         <div className="ml-3">
-          <h3 className="text-sm font-medium text-yellow-800">Session Expired</h3>
-          <div className="mt-2 text-sm text-yellow-700">
+          <h3 className="text-sm font-medium text-yellow-800 dark:text-yellow-300">Session Expired</h3>
+          <div className="mt-2 text-sm text-yellow-700 dark:text-yellow-400">
             <p>You have been logged out due to inactivity for your security. Please log in again.</p>
           </div>
         </div>
@@ -86,11 +86,11 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4 py-12 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen items-center justify-center bg-gray-50 dark:bg-slate-950 px-4 py-12 sm:px-6 lg:px-8 transition-colors duration-200">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 tracking-tight">DailySales</h2>
-          <p className="mt-2 text-sm text-gray-600">Track your business easily.</p>
+          <h2 className="mt-6 text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">DailySales</h2>
+          <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">Track your business easily.</p>
         </div>
 
         {/* Suspense boundary required by Next.js for useSearchParams() */}
@@ -123,7 +123,7 @@ export default function LoginPage() {
               />
 
               {error && (
-                <div className="rounded-md bg-red-50 p-3 text-sm text-red-500 font-medium">
+                <div className="rounded-md bg-red-50 dark:bg-red-950/30 p-3 text-sm text-red-500 dark:text-red-400 font-medium">
                   {error}
                 </div>
               )}
@@ -134,8 +134,8 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center text-sm">
-              <span className="text-gray-500">Don&apos;t have an account? </span>
-              <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 transition-colors">
+              <span className="text-gray-500 dark:text-gray-400">Don&apos;t have an account? </span>
+              <Link href="/register" className="font-semibold text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 transition-colors">
                 Sign up
               </Link>
             </div>

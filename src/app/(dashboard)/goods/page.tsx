@@ -43,8 +43,8 @@ export default function GoodsCatalogue() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight text-gray-900">Goods Catalogue</h2>
-          <p className="text-sm text-gray-600 mt-1">Manage your inventory, packaging, and pricing.</p>
+          <h2 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">Goods Catalogue</h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">Manage your inventory, packaging, and pricing.</p>
         </div>
         <Link href="/goods/new">
           <Button>
@@ -53,10 +53,10 @@ export default function GoodsCatalogue() {
         </Link>
       </div>
 
-      <div className="rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
+      <div className="rounded-xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm overflow-hidden transition-colors duration-200">
         <div className="overflow-x-auto">
           <table className="w-full text-sm text-left">
-            <thead className="bg-gray-50 text-gray-700 font-semibold border-b border-gray-200">
+            <thead className="bg-gray-50 dark:bg-slate-800/50 text-gray-700 dark:text-gray-300 font-semibold border-b border-gray-200 dark:border-slate-800">
               <tr>
                 <th className="px-6 py-4">Item Name</th>
                 <th className="px-6 py-4">Packaging / Details</th>
@@ -68,16 +68,16 @@ export default function GoodsCatalogue() {
                 <th className="px-6 py-4 text-center">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-200">
+            <tbody className="divide-y divide-gray-200 dark:divide-slate-800">
               {isLoading ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     Loading inventory...
                   </td>
                 </tr>
               ) : goods.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={8} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     No goods found. Click &quot;Add Good&quot; to start building your catalogue.
                   </td>
                 </tr>
@@ -87,21 +87,21 @@ export default function GoodsCatalogue() {
                   const marginPercent = good.costPrice > 0 ? (margin / good.costPrice) * 100 : 100;
                   
                   return (
-                    <tr key={good.id} className="hover:bg-gray-50 transition-colors group">
-                      <td className="px-6 py-4 font-medium text-gray-900">{good.name}</td>
-                      <td className="px-6 py-4 text-gray-500">{good.packagingDesc || "—"}</td>
+                    <tr key={good.id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors group">
+                      <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{good.name}</td>
+                      <td className="px-6 py-4 text-gray-500 dark:text-gray-400">{good.packagingDesc || "—"}</td>
                       <td className="px-6 py-4">
-                        <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
+                        <span className="inline-flex items-center rounded-md bg-blue-50 dark:bg-blue-400/10 px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 ring-1 ring-inset ring-blue-700/10 dark:ring-blue-400/30">
                           {good.unitType}
                         </span>
                       </td>
-                      <td className="px-6 py-4 text-right font-semibold text-gray-900">
+                      <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-gray-100">
                         {good.currentStock}
                       </td>
-                      <td className="px-6 py-4 text-right text-gray-500">${Number(good.costPrice).toFixed(2)}</td>
-                      <td className="px-6 py-4 text-right text-gray-900 font-medium">${Number(good.sellingPrice).toFixed(2)}</td>
+                      <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">${Number(good.costPrice).toFixed(2)}</td>
+                      <td className="px-6 py-4 text-right text-gray-900 dark:text-gray-100 font-medium">${Number(good.sellingPrice).toFixed(2)}</td>
                       <td className="px-6 py-4 text-right">
-                        <span className={`font-medium ${margin >= 0 ? "text-green-600" : "text-red-600"}`}>
+                        <span className={`font-medium ${margin >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
                           ${margin.toFixed(2)} ({marginPercent.toFixed(1)}%)
                         </span>
                       </td>
