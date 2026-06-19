@@ -1,28 +1,38 @@
+/**
+ * auth.ts — Full NextAuth configuration (Node.js / Server only)
+ *
+ * This file extends the edge-safe authConfig with the Credentials provider,
+ * which uses Prisma (for DB lookups) and bcrypt (for password hashing).
+ * These are Node.js-only libraries and MUST NOT be imported in the proxy
+ * middleware (Edge runtime).
+ *
+ * Import this file only from:
+ *   - API routes (e.g. /api/auth/[...nextauth]/route.ts)
+ *   - Server Components that need the session (e.g. layouts, pages)
+ *   - Server Actions
+ *
+ * The proxy middleware imports auth.config.ts instead, keeping the Edge
+ * Function bundle well under Vercel's 1 MB limit.
+ */
+
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "./db";
 import { z } from "zod";
+import { authConfig } from "./auth.config";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
   password: z.string().min(6),
 });
 
-/**
- * NextAuth Configuration
- * 
- * Defines the authentication strategy, providers, and callbacks.
- * We use a JWT strategy and a Credentials provider since users log in with email/password.
- */
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  session: { 
-    strategy: "jwt",
-    maxAge: 4 * 60 * 60, // 4 hours in seconds (forces re-login)
-  },
-  pages: {
-    signIn: "/login",
-  },
+  // Spread the shared edge-safe config (session, pages, jwt/session callbacks)
+  ...authConfig,
+
+  // Add the Credentials provider — this is the only part that needs
+  // Prisma and bcrypt, so it lives here and never reaches the Edge bundle.
   providers: [
     CredentialsProvider({
       name: "Credentials",
@@ -39,7 +49,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         const { email, password } = parsedCredentials.data;
 
-        // Fetch user from DB, ignoring soft-deleted users
+        // Fetch user from DB, ignoring soft-deleted accounts
         const user = await db.user.findUnique({
           where: { email, deletedAt: null },
         });
@@ -51,18 +61,17 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const passwordsMatch = await bcrypt.compare(password, user.passwordHash);
 
         if (passwordsMatch) {
-          // Extract the client IP address from request headers for the audit log
+          // Extract the client IP for the audit log
           const ipAddress =
             request?.headers?.get?.("x-forwarded-for") ??
             request?.headers?.get?.("x-real-ip") ??
             null;
 
-          // Record a new login session for auditing purposes (useful for Super Admin Panel)
+          // Record a login session for the Super Admin audit panel
           await db.loginSession.create({
             data: { userId: user.id, ipAddress },
           });
 
-          // Return the user object to be passed into the JWT callback
           return {
             id: user.id,
             email: user.email,
@@ -76,44 +85,5 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
-  callbacks: {
-    /**
-     * JWT Callback: Responsible for constructing the token payload.
-     * This token is stored in the user's browser cookie.
-     */
-    async jwt({ token, user, trigger, session }) {
-      // Upon initial sign-in, the 'user' object is populated from the authorize callback.
-      // We embed custom RBAC and security flags directly into the JWT token.
-      if (user) {
-        token.id = user.id;
-        token.role = (user as any).role;
-        token.requiresPasswordChange = (user as any).requiresPasswordChange;
-      }
-      
-      // Handle mid-session updates (e.g., when a user changes their default password)
-      // The update trigger allows the client to explicitly update properties on the JWT.
-      if (trigger === "update" && session?.requiresPasswordChange !== undefined) {
-        token.requiresPasswordChange = session.requiresPasswordChange;
-      }
-      return token;
-    },
-    
-    /**
-     * Session Callback: Exposes data from the JWT token to the client-side session object.
-     * This ensures the frontend has immediate access to the user's ID, role, and password status
-     * without needing a separate API call.
-     */
-    async session({ session, token }) {
-      if (token && typeof token.id === "string") {
-        session.user.id = token.id;
-      }
-      if (token && typeof token.role === "string") {
-        (session.user as any).role = token.role;
-      }
-      if (token && typeof token.requiresPasswordChange === "boolean") {
-        (session.user as any).requiresPasswordChange = token.requiresPasswordChange;
-      }
-      return session;
-    },
-  },
 });
+
