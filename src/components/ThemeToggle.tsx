@@ -9,6 +9,8 @@ export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
 
   return (
+    // The ThemeToggle is styled with text-slate-300 and border-slate-700 to ensure it blends 
+    // seamlessly with the persistent dark slate background of the Sidebar in light mode.
     <Button
       variant="outline"
       size="sm"

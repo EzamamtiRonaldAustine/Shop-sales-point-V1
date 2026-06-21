@@ -28,6 +28,9 @@ export function Sidebar({ role = "STAFF" }: { role?: string }) {
   const filteredNavigation = navigation.filter(item => hasMinRole(role, item.minRole));
 
   return (
+    // The Sidebar uses a persistent dark slate background (bg-slate-800) even in light mode 
+    // to provide a more premium and professional aesthetic. In true dark mode, it switches 
+    // to a deeper gray (dark:bg-gray-900).
     <div className="flex h-full w-64 flex-col bg-slate-800 dark:bg-gray-900 border-r border-slate-700 dark:border-gray-800 transition-colors duration-200">
       <div className="flex h-16 shrink-0 items-center px-6 border-b border-slate-700 dark:border-gray-800">
         <h1 className="text-xl font-bold text-white tracking-tight">DailySales</h1>
@@ -46,6 +49,8 @@ export function Sidebar({ role = "STAFF" }: { role?: string }) {
                 <Link
                   href={item.href}
                   className={cn(
+                     // Active and hover states are carefully tuned to contrast against the dark 
+                     // slate background without relying on standard light-mode text colors.
                      isActive
                        ? "bg-slate-700 text-white dark:bg-gray-800 dark:text-white"
                        : "text-slate-300 dark:text-gray-400 hover:bg-slate-700/60 dark:hover:bg-gray-800 hover:text-white dark:hover:text-white",
