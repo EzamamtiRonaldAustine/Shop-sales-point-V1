@@ -27,7 +27,7 @@ By [Ezamamti Ronald Austine]
 
 ## 1. Project Overview
 
-**DailySales** is a full stack web application built with **Next.js 14** (App Router), **PostgreSQL** via **Neon**, and deployed on **Vercel**. It is designed for small business owners — market traders, shop owners, or sole traders — who need a simple, reliable system to:
+**DailySales** is a full stack web application built with **Next.js 16** (App Router), **PostgreSQL** via **Neon**, and deployed on **Vercel**. It is designed for small business owners — market traders, shop owners, or sole traders — who need a simple, reliable system to:
 
 - Record goods they stock and sell (by piece, kilogram, or litre)
 - Log daily sales transactions with quantities and revenue
@@ -85,8 +85,8 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 
 | Tool | Purpose | Why |
 |---|---|---|
-| **Next.js 14** (App Router) | Framework | Server components, server actions, API routes, file-based routing |
-| **React 18** | UI library | Component model, hooks, concurrent features |
+| **Next.js 16** (App Router) | Framework | Server components, server actions, API routes, file-based routing |
+| **React 19** | UI library | Component model, hooks, concurrent features |
 | **Tailwind CSS** | Styling | Utility-first, zero config with Next.js, responsive by default |
 | **Recharts** | Data visualisation | Composable charts, works well with React, lightweight |
 | **React Hook Form** | Form state management | Performant, minimal re-renders, easy validation integration |
@@ -130,7 +130,7 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 └────────────────────────┬────────────────────────────┘
                          │ HTTP / React Server Components
 ┌────────────────────────▼────────────────────────────┐
-│            Next.js 14 App Router (Vercel)            │
+│            Next.js 16 App Router (Vercel)            │
 │   Server Components · Server Actions · Middleware    │
 │                                                      │
 │  ┌──────────────┐ ┌───────────────┐ ┌─────────────┐ │
@@ -360,7 +360,7 @@ Copy `.env.local` to `.env.example` and blank out all the values before committi
 
 ### Prerequisites
 
-- Node.js 18.17 or later
+- Node.js 20 or later
 - npm 9 or later
 - A [Neon](https://neon.tech) account (free)
 - A [GitHub](https://github.com) account (free)
@@ -465,7 +465,7 @@ All endpoints are under `/api`. All routes require an authenticated session exce
 ## 10. Build Phases & Roadmap
 
 ### Phase 1 — Project setup (Day 1)
-- Initialise Next.js 14 with TypeScript and Tailwind CSS
+- Initialise Next.js 16 with TypeScript and Tailwind CSS
 - Create GitHub repository and push initial commit
 - Create Neon database and obtain `DATABASE_URL`
 - Install Prisma, write `schema.prisma`, run first migration
@@ -612,8 +612,8 @@ Or add this to your Vercel build command: `npx prisma migrate deploy && next bui
 
 | Tool | Category | Cost | Link |
 |---|---|---|---|
-| Next.js 14 | Framework | Free / open source | nextjs.org |
-| React 18 | UI library | Free / open source | react.dev |
+| Next.js 16 | Framework | Free / open source | nextjs.org |
+| React 19 | UI library | Free / open source | react.dev |
 | Tailwind CSS | Styling | Free / open source | tailwindcss.com |
 | Prisma | ORM | Free / open source | prisma.io |
 | NextAuth.js | Auth | Free / open source | authjs.dev |
@@ -656,4 +656,4 @@ This project is licensed under the **MIT License**. See `LICENSE` for details.
 
 ---
 
-*Built with Next.js 14, Prisma, PostgreSQL (Neon), and deployed on Vercel.*
+*Built with Next.js 16, Prisma, PostgreSQL (Neon), and deployed on Vercel.*
