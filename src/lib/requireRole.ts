@@ -25,11 +25,12 @@ export async function requireRole(minimum: Role): Promise<
       error: NextResponse.json({ message: "Unauthorized" }, { status: 401 }),
     };
   }
-
+  // Default to "STAFF" if role is missing, but this should ideally never happen if your database is consistent.
   const userRole = (session.user as { role?: Role }).role ?? "STAFF";
   const userLevel = ROLE_ORDER.indexOf(userRole);
   const requiredLevel = ROLE_ORDER.indexOf(minimum);
 
+  // If the user's role is not recognized (not in ROLE_ORDER), treat them as having no permissions.
   if (userLevel < requiredLevel) {
     return {
       user: null,
