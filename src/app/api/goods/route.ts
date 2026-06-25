@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { requireRole } from "@/lib/requireRole";
 import { goodSchema } from "@/lib/validations";
 
+// GET request handler to fetch goods based on user role
 export async function GET() {
   try {
     const { user, error } = await requireRole("STAFF");
