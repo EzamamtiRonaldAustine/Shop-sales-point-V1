@@ -1,12 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { useSession } from "next-auth/react";
+import { useSession, SessionProvider } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { Upload, User as UserIcon, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 
-export default function ProfilePage() {
-  const { data: session, update } = useSession();
+function ProfileContent() {
+  const { data: session } = useSession();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
   
@@ -194,5 +194,13 @@ export default function ProfilePage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function ProfilePage() {
+  return (
+    <SessionProvider>
+      <ProfileContent />
+    </SessionProvider>
   );
 }
