@@ -22,7 +22,13 @@ const navigation = [
   { name: "Super Admin", href: "/super-admin", icon: Users, minRole: "SUPER_ADMIN" },
 ];
 
-export function Sidebar({ role = "STAFF" }: { role?: string }) {
+interface SidebarUser {
+  name: string | null;
+  email: string | null;
+  profileImage: string | null;
+}
+
+export function Sidebar({ role = "STAFF", user }: { role?: string, user?: SidebarUser | null }) {
   const pathname = usePathname();
 
   const filteredNavigation = navigation.filter(item => hasMinRole(role, item.minRole));
@@ -72,6 +78,31 @@ export function Sidebar({ role = "STAFF" }: { role?: string }) {
           
           <li className="mt-auto space-y-2">
             <ThemeToggle />
+            
+            {/* User Profile Section */}
+            <Link
+              href="/profile"
+              className="group flex items-center gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-slate-300 dark:text-gray-400 hover:bg-slate-700/60 dark:hover:bg-gray-800 hover:text-white dark:hover:text-white transition-colors"
+            >
+              {user?.profileImage ? (
+                <img
+                  src={user.profileImage}
+                  alt="Profile"
+                  className="h-8 w-8 rounded-full object-cover shrink-0 border border-slate-600 dark:border-gray-700"
+                />
+              ) : (
+                <div className="h-8 w-8 rounded-full bg-slate-700 dark:bg-gray-800 flex items-center justify-center shrink-0 border border-slate-600 dark:border-gray-700">
+                  <span className="text-xs font-medium text-slate-300 dark:text-gray-400">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "U"}
+                  </span>
+                </div>
+              )}
+              <div className="flex flex-col overflow-hidden">
+                <span className="truncate text-white dark:text-gray-200">{user?.name || "User"}</span>
+                <span className="truncate text-xs text-slate-400 dark:text-gray-500">View Profile</span>
+              </div>
+            </Link>
+
             <button
               onClick={() => signOut({ callbackUrl: "/login" })}
               className="group flex w-full gap-x-3 rounded-md p-2 text-sm leading-6 font-medium text-red-400 dark:text-red-400 hover:bg-red-500/10 dark:hover:bg-red-950/30 transition-colors"

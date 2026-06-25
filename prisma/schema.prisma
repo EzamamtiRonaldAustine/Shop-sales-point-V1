@@ -19,6 +19,7 @@ model User {
   name                   String?
   email                  String         @unique
   passwordHash           String?
+  profileImage           String?
   role                   Role           @default(STAFF)
   requiresPasswordChange Boolean        @default(false)
   deletedAt              DateTime?
