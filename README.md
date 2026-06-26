@@ -34,6 +34,8 @@ By [Ezamamti Ronald Austine]
 - Track investment/restocking costs per good
 - Calculate daily, weekly, and monthly profit or loss
 - Visualise analytics: top-selling goods, slow-moving stock, profit trends, and best-performing days
+- Manage a personal profile including an uploaded profile picture
+- Download comprehensive Excel reports of all shop data (Admin & Super Admin only)
 
 The application is **free to build and deploy** using the free tiers of Vercel, Neon, and GitHub with no credit card required for development and early production use.
 
@@ -43,8 +45,9 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 
 ### Goods & Inventory Management
 - Add, edit, and delete goods
-- Assign unit types per good: `piece`, `kilogram`, or `litre`
+- Assign unit types per good: `piece`, `kilogram`, `litre`, `ton`, `dozen`, `box`, or `tray`
 - Set cost price (what you pay) and selling price (what you charge) per unit
+- Track current stock levels — automatically decremented on each sale
 - View the full goods catalogue with current margins
 
 ### Daily Sales Entry
@@ -56,7 +59,7 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 ### Investment / Cost Tracking
 - Record restocking or investment costs linked to a specific good
 - Or log general daily operating costs not tied to a specific good
-- Track total spend per good over time
+- Track total spend and quantity added per good over time
 
 ### Profit & Loss Dashboard
 - Daily summary: total revenue, total costs, net profit or loss
@@ -64,18 +67,31 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 - Visual indicator: green for profit, red for loss
 - Weekly and monthly roll-up views
 
-### Analytics
+### Analytics & Reporting
 - Top 5 best-selling goods by quantity and by revenue
-- Slowest-moving goods (flagged for review)
-- Profit trend chart over 30 / 90 days
-- Best-performing day of the week
-- Goods with the highest margin vs goods sold at a loss
+- Profit trend chart (daily revenue over time)
+- KPI summary cards: total revenue, total investment, net position
+- **Excel Export** — Admin and Super Admin users can download a multi-sheet `.xlsx` workbook containing Goods, Sales, and Investments data with a single click
 
-### Authentication
+### Role-Based Access Control
+- Four roles: `STAFF`, `MANAGER`, `ADMIN`, and `SUPER_ADMIN`
+- Navigation and API endpoints are protected per role
+- `STAFF`: view goods, log sales
+- `MANAGER`: all of the above + log investments, create goods
+- `ADMIN`: all of the above + view analytics, download Excel reports
+- `SUPER_ADMIN`: full access including user management and audit logs
+
+### User Profiles & Authentication
 - User registration and login (email + password)
-- Optional Google OAuth sign-in
-- Session-based auth — each user sees only their own data
-- Protected routes via Next.js middleware
+- Session-based auth via NextAuth.js (Auth.js v5) — each user sees only their own data
+- Protected routes via Next.js Middleware (Edge-safe)
+- Each user has a personal **Profile page** (`/profile`) displaying their name, email, and role
+- Users can upload and update a **profile picture** directly from the Profile page
+- Profile pictures are compressed client-side (Canvas API, max 250×250 px, JPEG 80%) before being stored as Base64 in the database, keeping storage usage minimal
+- Profile picture is displayed in the sidebar navigation for a personalised experience
+- Auto-logout after session expiry (4-hour JWT TTL)
+- Forced password change on first login for provisioned accounts
+- Login session audit trail for Super Admin review
 
 ---
 
@@ -101,6 +117,7 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 | **Prisma ORM** | Database access | Type-safe queries, auto-generated types, migrations built in |
 | **NextAuth.js (Auth.js v5)** | Authentication | Purpose-built for Next.js, supports credentials + OAuth |
 | **bcryptjs** | Password hashing | Secure credential storage |
+| **xlsx** | Excel report generation | Industry-standard library for server-side `.xlsx` workbook creation |
 
 ### Database
 
@@ -133,25 +150,30 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 │            Next.js 16 App Router (Vercel)            │
 │   Server Components · Server Actions · Middleware    │
 │                                                      │
-│  ┌──────────────┐ ┌───────────────┐ ┌─────────────┐ │
-│  │ /api/goods   │ │  /api/sales   │ │/api/analytics│ │
-│  │ CRUD · units │ │ Daily logs    │ │ Trends · Top │ │
-│  └──────┬───────┘ └───────┬───────┘ └──────┬──────┘ │
-└─────────┼─────────────────┼────────────────┼────────┘
-          │                 │                │
-┌─────────▼─────────────────▼────────────────▼────────┐
-│                    Prisma ORM                        │
-│         Type-safe queries · Migrations               │
-└────────────────────────┬────────────────────────────┘
+│  ┌────────────┐ ┌───────────┐ ┌────────────┐ ┌──────────────┐ │
+│  │ /api/goods │ │/api/sales │ │/api/invest.│ │/api/analytics│ │
+│  │ CRUD·units │ │Daily logs │ │Restock logs│ │Export · xlsx │ │
+│  └─────┬──────┘ └─────┬─────┘ └──────┬─────┘ └──────┬───────┘ │
+│        │              │               │               │          │
+│  ┌─────┴──────────────┴───────────────┴───────────────┴──────┐  │
+│  │             /api/users  ·  /api/admin  ·  /api/auth       │  │
+│  │        Profile Image · User Management · Auth handlers    │  │
+│  └─────────────────────────────────────────────────────────--┘  │
+└──────────────────────────────────────────────────────────────────┘
+          │
+┌─────────▼─────────────────────────────────────────────────────┐
+│                       Prisma ORM                               │
+│            Type-safe queries · Schema auto-push                │
+└────────────────────────┬───────────────────────────────────────┘
                          │
-┌────────────────────────▼────────────────────────────┐
-│              PostgreSQL — Neon (free tier)            │
-│    users · goods · sale_entries · investment_logs    │
-└─────────────────────────────────────────────────────┘
+┌────────────────────────▼───────────────────────────────────────┐
+│              PostgreSQL — Neon (free tier)                      │
+│  users · goods · sale_entries · investment_logs · login_sessions│
+└────────────────────────────────────────────────────────────────┘
 
 Dev Pipeline:
-  GitHub ──push──▶ Vercel CI ──build──▶ Production URL
-  Postman ◀────── /api/* routes ───────────────────────
+  GitHub ──push──▶ Vercel CI ──prisma db push──▶ next build──▶ Production URL
+  Postman ◀──────────── /api/* routes ──────────────────────────────────────
 ```
 
 ---
@@ -170,32 +192,57 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  MANAGER
+  STAFF
+}
+
 model User {
-  id             String           @id @default(cuid())
-  name           String?
-  email          String           @unique
-  passwordHash   String?
-  createdAt      DateTime         @default(now())
-  updatedAt      DateTime         @updatedAt
+  id                     String         @id @default(cuid())
+  name                   String?
+  email                  String         @unique
+  passwordHash           String?
+  profileImage           String?        // Base64-encoded, client-compressed avatar
+  role                   Role           @default(STAFF)
+  requiresPasswordChange Boolean        @default(false)
+  deletedAt              DateTime?      // Soft-delete — account hidden but data preserved
+  createdAt              DateTime       @default(now())
+  updatedAt              DateTime       @updatedAt
 
   goods          Good[]
   saleEntries    SaleEntry[]
   investmentLogs InvestmentLog[]
+  loginSessions  LoginSession[]
 
   @@map("users")
 }
 
-model Good {
-  id            String    @id @default(cuid())
-  name          String
-  unitType      UnitType  @default(PIECE)
-  costPrice     Decimal   @db.Decimal(10, 2)
-  sellingPrice  Decimal   @db.Decimal(10, 2)
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+model LoginSession {
+  id        String    @id @default(cuid())
+  userId    String
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  loginAt   DateTime  @default(now())
+  logoutAt  DateTime?
+  ipAddress String?
 
-  userId        String
-  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@map("login_sessions")
+}
+
+model Good {
+  id            String   @id @default(cuid())
+  name          String
+  unitType      UnitType @default(PIECE)
+  packagingDesc String?
+  costPrice     Decimal  @db.Decimal(10, 2)
+  sellingPrice  Decimal  @db.Decimal(10, 2)
+  currentStock  Decimal  @default(0) @db.Decimal(10, 3)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   saleEntries    SaleEntry[]
   investmentLogs InvestmentLog[]
@@ -207,6 +254,10 @@ enum UnitType {
   PIECE
   KILOGRAM
   LITRE
+  TON
+  DOZEN
+  BOX
+  TRAY
 }
 
 model SaleEntry {
@@ -217,27 +268,28 @@ model SaleEntry {
   note         String?
   createdAt    DateTime @default(now())
 
-  goodId  String
-  good    Good   @relation(fields: [goodId], references: [id], onDelete: Cascade)
+  goodId String
+  good   Good   @relation(fields: [goodId], references: [id], onDelete: Cascade)
 
-  userId  String
-  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("sale_entries")
 }
 
 model InvestmentLog {
-  id          String   @id @default(cuid())
-  amountSpent Decimal  @db.Decimal(10, 2)
-  note        String?
-  date        DateTime @db.Date
-  createdAt   DateTime @default(now())
+  id            String   @id @default(cuid())
+  amountSpent   Decimal  @db.Decimal(10, 2)
+  quantityAdded Decimal? @db.Decimal(10, 3)
+  note          String?
+  date          DateTime @db.Date
+  createdAt     DateTime @default(now())
 
-  goodId  String?
-  good    Good?   @relation(fields: [goodId], references: [id], onDelete: SetNull)
+  goodId String?
+  good   Good?   @relation(fields: [goodId], references: [id], onDelete: SetNull)
 
-  userId  String
-  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("investment_logs")
 }
@@ -245,89 +297,108 @@ model InvestmentLog {
 
 ### Key relationships
 
-- One **User** has many **Goods**, **SaleEntries**, and **InvestmentLogs**
+- One **User** has many **Goods**, **SaleEntries**, **InvestmentLogs**, and **LoginSessions**
 - One **Good** has many **SaleEntries** and **InvestmentLogs**
 - **InvestmentLog.goodId** is nullable — costs can be general (not tied to a specific good)
+- **User.profileImage** stores a Base64 data URL (compressed on the client to < 50 KB before upload)
+- **User.deletedAt** enables soft deletion — deactivated accounts retain historical data
+- **LoginSession** records IP address and timestamps for the Super Admin audit trail
 - Profit formula: `SUM(sale_entries.total_revenue) - SUM(investment_logs.amount_spent)` filtered by date and user
+- Stock formula: `Good.currentStock` is decremented automatically on each `POST /api/sales` via a database transaction
 
 ---
 
 ## 6. Project Structure
 
 ```
-sales-app/
-├── app/
-│   ├── (auth)/
-│   │   ├── login/
-│   │   │   └── page.tsx               # Login page
-│   │   └── register/
-│   │       └── page.tsx               # Register page
-│   ├── (dashboard)/
-│   │   ├── layout.tsx                 # Dashboard shell with nav sidebar
-│   │   ├── page.tsx                   # Home: today's P&L summary
-│   │   ├── goods/
-│   │   │   ├── page.tsx               # Goods catalogue list
-│   │   │   ├── new/page.tsx           # Add a new good
-│   │   │   └── [id]/edit/page.tsx     # Edit an existing good
-│   │   ├── sales/
-│   │   │   ├── page.tsx               # Log today's sales
-│   │   │   └── [date]/page.tsx        # View sales for a specific date
-│   │   ├── investments/
-│   │   │   └── page.tsx               # Log investment / restocking costs
-│   │   └── analytics/
-│   │       └── page.tsx               # Charts and insights
-│   ├── api/
-│   │   ├── auth/
-│   │   │   └── [...nextauth]/route.ts # NextAuth handler
-│   │   ├── goods/
-│   │   │   ├── route.ts               # GET (list), POST (create)
-│   │   │   └── [id]/route.ts          # GET (one), PUT (update), DELETE
-│   │   ├── sales/
-│   │   │   ├── route.ts               # GET (by date), POST (create)
-│   │   │   └── [id]/route.ts          # PUT, DELETE
-│   │   ├── investments/
-│   │   │   ├── route.ts               # GET, POST
-│   │   │   └── [id]/route.ts          # PUT, DELETE
-│   │   └── analytics/
-│   │       └── route.ts               # GET summary data for charts
-│   ├── globals.css
-│   └── layout.tsx                     # Root layout with providers
-│
-├── components/
-│   ├── ui/                            # Reusable primitives
-│   │   ├── Button.tsx
-│   │   ├── Input.tsx
-│   │   ├── Badge.tsx
-│   │   ├── Card.tsx
-│   │   └── DatePicker.tsx
-│   ├── GoodForm.tsx                   # Add / edit good form
-│   ├── SaleEntryForm.tsx              # Log a sale entry
-│   ├── InvestmentForm.tsx             # Log an investment cost
-│   ├── DailySummaryCard.tsx           # Revenue / cost / profit card
-│   ├── SalesChart.tsx                 # Recharts line chart
-│   ├── TopGoodsChart.tsx              # Recharts bar chart
-│   └── Navbar.tsx                     # Dashboard navigation
-│
-├── lib/
-│   ├── db.ts                          # Prisma client singleton
-│   ├── auth.ts                        # NextAuth configuration
-│   ├── validations.ts                 # Zod schemas for all forms
-│   └── utils.ts                       # formatCurrency, calcProfit, etc.
-│
-├── types/
-│   └── index.ts                       # Shared TypeScript interfaces
+shop-sales-point-v1/
+├── src/
+│   ├── app/
+│   │   ├── (auth)/
+│   │   │   ├── login/
+│   │   │   │   └── page.tsx               # Login page
+│   │   │   └── register/
+│   │   │       └── page.tsx               # Register page
+│   │   ├── (dashboard)/
+│   │   │   ├── layout.tsx                 # Dashboard shell — fetches user & profile image from DB
+│   │   │   ├── dashboard/
+│   │   │   │   └── page.tsx               # Home: today's P&L summary
+│   │   │   ├── goods/
+│   │   │   │   ├── page.tsx               # Goods catalogue list
+│   │   │   │   └── new/page.tsx           # Add a new good
+│   │   │   ├── sales/
+│   │   │   │   └── page.tsx               # Log and view sales by date
+│   │   │   ├── investments/
+│   │   │   │   └── page.tsx               # Log investment / restocking costs
+│   │   │   ├── analytics/
+│   │   │   │   └── page.tsx               # Charts, KPIs, and Excel export button
+│   │   │   ├── profile/
+│   │   │   │   ├── page.tsx               # Server Component — fetches user from DB, renders ProfileClient
+│   │   │   │   └── ProfileClient.tsx      # Client Component — avatar upload, user details display
+│   │   │   └── super-admin/
+│   │   │       └── page.tsx               # User management & login audit log (SUPER_ADMIN only)
+│   │   ├── api/
+│   │   │   ├── auth/
+│   │   │   │   ├── [...nextauth]/route.ts # NextAuth handler
+│   │   │   │   ├── register/route.ts      # POST — create new user account
+│   │   │   │   └── change-password/route.ts # POST — change own password
+│   │   │   ├── goods/
+│   │   │   │   ├── route.ts               # GET (list), POST (create) — min. STAFF/MANAGER
+│   │   │   │   └── [id]/route.ts          # PUT (update), DELETE — min. MANAGER
+│   │   │   ├── sales/
+│   │   │   │   ├── route.ts               # GET (list), POST (create) — min. STAFF
+│   │   │   │   └── [id]/route.ts          # PUT, DELETE
+│   │   │   ├── investments/
+│   │   │   │   ├── route.ts               # GET, POST — min. MANAGER
+│   │   │   │   └── [id]/route.ts          # PUT, DELETE
+│   │   │   ├── analytics/
+│   │   │   │   └── export/route.ts        # GET — Excel workbook download (ADMIN+)
+│   │   │   ├── users/
+│   │   │   │   └── profile-image/route.ts # POST — upload Base64 avatar (authenticated)
+│   │   │   └── admin/
+│   │   │       ├── users/route.ts         # GET, POST — user management (SUPER_ADMIN)
+│   │   │       ├── users/[id]/route.ts    # PUT, DELETE — edit/deactivate user
+│   │   │       └── sessions/route.ts      # GET — login audit log
+│   │   ├── globals.css
+│   │   ├── page.tsx                       # Root redirect
+│   │   └── layout.tsx                     # Root layout with ThemeProvider
+│   │
+│   ├── components/
+│   │   ├── ui/                            # Reusable primitives (Card, Badge, etc.)
+│   │   ├── analytics/
+│   │   │   └── AnalyticsCharts.tsx        # Recharts charts + KPI cards
+│   │   ├── GoodForm.tsx                   # Add / edit good form
+│   │   ├── Sidebar.tsx                    # Navigation — displays profile picture & role badge
+│   │   ├── AutoLogout.tsx                 # Client component — enforces JWT session expiry
+│   │   ├── ChangePasswordPopup.tsx        # Forced password change overlay
+│   │   ├── ThemeProvider.tsx              # next-themes wrapper
+│   │   └── ThemeToggle.tsx               # Dark / light mode toggle
+│   │
+│   ├── lib/
+│   │   ├── db.ts                          # Prisma client singleton
+│   │   ├── auth.ts                        # Full NextAuth config (Node.js only)
+│   │   ├── auth.config.ts                 # Edge-safe NextAuth config (for Middleware)
+│   │   ├── requireRole.ts                 # Role-based access helper for API routes
+│   │   ├── validations.ts                 # Zod schemas for all forms & API payloads
+│   │   └── utils.ts                       # Shared utility functions
+│   │
+│   ├── types/
+│   │   └── next-auth.d.ts                 # NextAuth type extensions (id, role, etc.)
+│   │
+│   └── proxy.ts                           # Edge-safe auth proxy for Middleware
 │
 ├── prisma/
-│   ├── schema.prisma                  # Database schema (see above)
-│   └── migrations/                    # Auto-generated migration files
+│   ├── schema.prisma                      # Full database schema
+│   └── seed.js                            # Optional seed script
 │
-├── middleware.ts                      # Protect dashboard routes
-├── .env.local                         # Local secrets — never commit
-├── .env.example                       # Template for teammates
+├── middleware.ts                          # Route protection (Edge runtime)
+├── .env.local                             # Local secrets — never commit
+├── .env.example                           # Template for teammates / Vercel setup
 ├── next.config.ts
-├── tailwind.config.ts
 ├── tsconfig.json
-├── postcss.config.js
+├── postcss.config.mjs
+├── eslint.config.mjs
+├── NEON_DATABASE_SETUP.md                 # Step-by-step Neon connection guide
 └── README.md
 ```
 
@@ -410,55 +481,72 @@ npx prisma db push                     # Push schema changes without a migration
 
 ## 9. API Reference
 
-All endpoints are under `/api`. All routes require an authenticated session except auth routes.
+All endpoints are under `/api`. All routes require an authenticated session except the auth routes below. Role requirements are noted per endpoint.
+
+### Authentication
+
+| Method | Endpoint | Description | Min. Role | Body |
+|---|---|---|---|---|
+| `POST` | `/api/auth/register` | Register a new user account | — (public) | `{ name, email, password }` |
+| `POST` | `/api/auth/change-password` | Change own password | `STAFF` | `{ currentPassword, newPassword }` |
+| `GET/POST` | `/api/auth/[...nextauth]` | NextAuth session handler | — | — |
 
 ### Goods
 
-| Method | Endpoint | Description | Body |
-|---|---|---|---|
-| `GET` | `/api/goods` | List all goods for current user | — |
-| `POST` | `/api/goods` | Create a new good | `{ name, unitType, costPrice, sellingPrice }` |
-| `GET` | `/api/goods/:id` | Get a single good | — |
-| `PUT` | `/api/goods/:id` | Update a good | `{ name?, unitType?, costPrice?, sellingPrice? }` |
-| `DELETE` | `/api/goods/:id` | Delete a good | — |
+| Method | Endpoint | Description | Min. Role | Body |
+|---|---|---|---|---|
+| `GET` | `/api/goods` | List goods (own; ADMIN+ sees all) | `STAFF` | — |
+| `POST` | `/api/goods` | Create a new good | `MANAGER` | `{ name, unitType, costPrice, sellingPrice, currentStock? }` |
+| `PUT` | `/api/goods/:id` | Update a good | `MANAGER` | `{ name?, unitType?, costPrice?, sellingPrice? }` |
+| `DELETE` | `/api/goods/:id` | Delete a good | `MANAGER` | — |
 
 ### Sales
 
-| Method | Endpoint | Description | Body |
-|---|---|---|---|
-| `GET` | `/api/sales?date=YYYY-MM-DD` | List sales for a date | — |
-| `POST` | `/api/sales` | Log a new sale entry | `{ goodId, quantity, saleDate, note? }` |
-| `PUT` | `/api/sales/:id` | Update a sale entry | `{ quantity?, note? }` |
-| `DELETE` | `/api/sales/:id` | Delete a sale entry | — |
+| Method | Endpoint | Description | Min. Role | Body |
+|---|---|---|---|---|
+| `GET` | `/api/sales` | List sales (own; ADMIN+ sees all) | `MANAGER` | — |
+| `POST` | `/api/sales` | Log a new sale entry; decrements stock | `STAFF` | `{ goodId, quantity, saleDate, note? }` |
+| `PUT` | `/api/sales/:id` | Update a sale entry | `STAFF` | `{ quantity?, note? }` |
+| `DELETE` | `/api/sales/:id` | Delete a sale entry | `STAFF` | — |
 
 ### Investments
 
-| Method | Endpoint | Description | Body |
-|---|---|---|---|
-| `GET` | `/api/investments?date=YYYY-MM-DD` | List investment logs for a date | — |
-| `POST` | `/api/investments` | Log an investment cost | `{ amountSpent, date, goodId?, note? }` |
-| `PUT` | `/api/investments/:id` | Update an investment log | `{ amountSpent?, note? }` |
-| `DELETE` | `/api/investments/:id` | Delete an investment log | — |
+| Method | Endpoint | Description | Min. Role | Body |
+|---|---|---|---|---|
+| `GET` | `/api/investments` | List investment logs | `MANAGER` | — |
+| `POST` | `/api/investments` | Log an investment/restock cost | `MANAGER` | `{ amountSpent, date, goodId?, note?, quantityAdded? }` |
+| `PUT` | `/api/investments/:id` | Update an investment log | `MANAGER` | `{ amountSpent?, note? }` |
+| `DELETE` | `/api/investments/:id` | Delete an investment log | `MANAGER` | — |
 
 ### Analytics
 
-| Method | Endpoint | Description | Query params |
+| Method | Endpoint | Description | Min. Role |
 |---|---|---|---|
-| `GET` | `/api/analytics` | Full analytics summary | `?period=30d\|90d\|all` |
+| `GET` | `/api/analytics/export` | Download multi-sheet Excel report (`.xlsx`) | `ADMIN` |
 
-**Analytics response shape:**
-```json
-{
-  "topSellingByQuantity": [{ "goodId": "", "goodName": "", "totalQty": 0 }],
-  "topSellingByRevenue":  [{ "goodId": "", "goodName": "", "totalRevenue": 0 }],
-  "slowestMoving":        [{ "goodId": "", "goodName": "", "totalQty": 0 }],
-  "profitByDay":          [{ "date": "YYYY-MM-DD", "revenue": 0, "costs": 0, "profit": 0 }],
-  "bestDayOfWeek":        "Monday",
-  "totalRevenue":         0,
-  "totalCosts":           0,
-  "netProfit":            0
-}
-```
+The export endpoint returns a binary `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet` file with three sheets:
+- **Goods Catalogue** — all goods with unit type, pricing, and current stock
+- **Sales History** — all sale entries with date, good name, quantity, revenue, and logged-by user
+- **Investments** — all investment logs with date, good, amount spent, quantity added, and logged-by user
+
+### User Profile
+
+| Method | Endpoint | Description | Min. Role | Body |
+|---|---|---|---|---|
+| `POST` | `/api/users/profile-image` | Upload / replace profile picture | `STAFF` | `{ image: "data:image/jpeg;base64,..." }` |
+
+> **Storage note:** Images are compressed client-side to a maximum of 250×250 px at 80% JPEG quality using the browser's Canvas API before being sent to this endpoint. The resulting Base64 string is typically under 20 KB.
+
+### Admin — User Management (SUPER_ADMIN only)
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `GET` | `/api/admin/users` | List all users (including soft-deleted) |
+| `POST` | `/api/admin/users` | Provision a new user account |
+| `PUT` | `/api/admin/users/:id` | Edit user details or role |
+| `DELETE` | `/api/admin/users/:id` | Soft-delete a user account |
+| `PUT` | `/api/admin/users/:id/restore` | Restore a soft-deleted account |
+| `GET` | `/api/admin/sessions` | Retrieve login session audit log |
 
 ---
 
@@ -543,11 +631,26 @@ All endpoints are under `/api`. All routes require an authenticated session exce
 - Write `.env.example` with all variable names
 - Push final code to GitHub
 - Connect repo to Vercel and configure environment variables
-- Run `npx prisma migrate deploy` against production Neon database
+- Database schema is automatically applied on every Vercel deployment via the build script (`prisma db push`)
 - Test all routes with Postman against the production URL
 - Register a real user and complete an end-to-end test
 
 **Deliverable:** Application is live on Vercel, production database is migrated, fully tested.
+
+---
+
+### Phase 9 — User profiles & reporting (Post-launch)
+- Add `profileImage` field to the `User` model in `prisma/schema.prisma`
+- Build `POST /api/users/profile-image` endpoint with Base64 validation
+- Build `/profile` page as a Server Component fetching the latest user data from the database
+- Extract interactive upload UI into `ProfileClient.tsx` (client component) — receives user as props, avoiding session hook conflicts
+- Implement client-side Canvas compression before upload (max 250×250 px, JPEG 80%)
+- Display profile picture in the sidebar with fallback initials avatar
+- Install `xlsx` library and build `GET /api/analytics/export` endpoint (ADMIN+)
+- Add "Download Excel Report" button to the Analytics page header
+- Update `package.json` build script to run `prisma db push --accept-data-loss` automatically on every Vercel deployment
+
+**Deliverable:** All users have a profile page with avatar management; privileged users can export shop data to Excel at any time.
 
 ---
 
@@ -576,21 +679,24 @@ git push -u origin main
 3. Before deploying, go to **Settings → Environment Variables** and add all variables from your `.env.local`
 4. Click **Deploy**
 
-### Step 4 — Run database migrations on production
+### Step 4 — Database migrations (automatic)
 
-After the first deploy, run migrations against your Neon production database:
+The build script in `package.json` is configured to push the Prisma schema to your Neon database automatically on every Vercel deployment:
 
-```bash
-# Set DATABASE_URL to your production Neon URL temporarily, then:
-npx prisma migrate deploy
+```json
+"build": "prisma generate && prisma db push --accept-data-loss && next build"
 ```
 
-Or add this to your Vercel build command: `npx prisma migrate deploy && next build`
+This means you do **not** need to run migrations manually after the initial setup. Vercel will sync your database schema with every push to `main`.
+
+> **Important:** Always use the **direct** Neon connection string (not the `-pooler` URL) in your `DATABASE_URL` environment variable. The pooler URL can cause `P1001` connection errors during the schema push step.
 
 ### Step 5 — Verify
 
 - Visit your Vercel URL and register a user
+- Upload a profile picture from the Profile page and confirm it appears in the sidebar
 - Add a good, log a sale, and confirm data appears in Neon (use Prisma Studio locally pointing at the prod DB to inspect)
+- Log in as an Admin and navigate to Analytics — confirm the "Download Excel Report" button generates a valid `.xlsx` file
 - Test all API routes with Postman using the production base URL
 
 ---
@@ -614,13 +720,17 @@ Or add this to your Vercel build command: `npx prisma migrate deploy && next bui
 |---|---|---|---|
 | Next.js 16 | Framework | Free / open source | nextjs.org |
 | React 19 | UI library | Free / open source | react.dev |
-| Tailwind CSS | Styling | Free / open source | tailwindcss.com |
-| Prisma | ORM | Free / open source | prisma.io |
-| NextAuth.js | Auth | Free / open source | authjs.dev |
+| Tailwind CSS v4 | Styling | Free / open source | tailwindcss.com |
+| Prisma v6 | ORM | Free / open source | prisma.io |
+| NextAuth.js v5 (Auth.js) | Auth | Free / open source | authjs.dev |
 | Recharts | Charts | Free / open source | recharts.org |
 | React Hook Form | Forms | Free / open source | react-hook-form.com |
 | Zod | Validation | Free / open source | zod.dev |
 | date-fns | Date utils | Free / open source | date-fns.io |
+| xlsx | Excel generation | Free / open source | sheetjs.com |
+| lucide-react | Icons | Free / open source | lucide.dev |
+| next-themes | Dark mode | Free / open source | npmjs.com/package/next-themes |
+| clsx + tailwind-merge | Class utilities | Free / open source | npmjs.com |
 | Neon | PostgreSQL hosting | Free tier available | neon.tech |
 | Vercel | App hosting | Free tier available | vercel.com |
 | GitHub | Version control | Free | github.com |

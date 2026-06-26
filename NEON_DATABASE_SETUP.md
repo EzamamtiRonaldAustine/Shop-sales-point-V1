@@ -1,53 +1,122 @@
 # Neon Database Setup Guide
 
-This guide explains how to connect your application to a Neon Serverless Postgres database.
+This guide explains how to connect **DailySales** to a Neon Serverless PostgreSQL database for both local development and production deployment on Vercel.
+
+---
 
 ## 1. Create a Neon Account and Project
-1. Go to [Neon.tech](https://neon.tech/) and sign up or log in.
-2. Create a new project.
-3. Select your preferred region and compute size.
 
-## 2. Get Your Connection String
-1. Once your project is created, navigate to the **Dashboard**.
-2. Under the **Connection Details** section, copy the **direct** PostgreSQL connection string for migrations.
-   - If you pick the pooled or Prisma-flavoured URL, `npx prisma migrate dev` can fail with `P1001`.
-   - Keep the actual secret value in `.env.local`, not in this guide.
-3. Copy the provided `DATABASE_URL`. It should look something like this:
-   `postgresql://[user]:[password]@[host]/[dbname]?sslmode=require`
+1. Go to [neon.tech](https://neon.tech/) and sign up or log in (free — no credit card required).
+2. Click **New Project** and give it a name (e.g., `dailysales-prod`).
+3. Select your preferred region (choose the one closest to your Vercel deployment region for lowest latency).
 
-## What Prisma Means Here
-Prisma is the database client/ORM used by this project. In this repo, it is already wired up in [prisma/schema.prisma](prisma/schema.prisma) and reads the `DATABASE_URL` from your `.env.local` file.
+---
 
-If you are setting up Neon for this project, you do not need to write Prisma code in Neon itself. You only need the connection string, then run Prisma commands locally.
+## 2. Obtain Your Connection Strings
 
-## 3. Update Your Environment Variables
-1. Open your `.env.local` file (or create one if it doesn't exist by copying `.env.example`).
-2. Update the `DATABASE_URL` variable with the connection string you copied from Neon:
-   ```env
-   DATABASE_URL="postgresql://user:password@host/dbname?sslmode=require"
-   ```
+Once your project is created, navigate to the **Connection Details** panel on your Neon dashboard.
 
-## 4. Run Prisma Migrations
-Now that your database is connected, you need to push the Prisma schema to your new Neon database. Run the following command in your terminal:
+You will see two types of connection strings:
+
+| Type | When to use |
+|---|---|
+| **Direct** (no `-pooler` in host) | Local development, `prisma migrate dev`, `prisma db push` |
+| **Pooled** (`-pooler` in host) | Vercel Edge/Serverless production requests |
+
+> **Critical:** The Prisma schema push commands (`prisma db push`, `prisma migrate deploy`) **must** use the **direct** connection string. Using the pooled URL causes a `P1001: Can't reach database server` error during the build step.
+
+Both URLs follow this pattern:
+```
+postgresql://[user]:[password]@[host]/[dbname]?sslmode=require
+```
+
+---
+
+## 3. Configure Environment Variables
+
+### Local Development (`.env.local`)
+
+Create a `.env.local` file in the project root if it does not already exist (you can copy `.env.example`):
+
+```env
+# Direct connection — required for Prisma CLI commands locally
+DATABASE_URL="postgresql://user:password@ep-xxx.us-east-1.aws.neon.tech/neondb?sslmode=require"
+
+# NextAuth
+NEXTAUTH_SECRET="your-random-secret-here"
+NEXTAUTH_URL="http://localhost:3000"
+```
+
+> **Never commit `.env.local` to Git.** It is already listed in `.gitignore`.
+
+### Vercel Production
+
+In your Vercel project dashboard, go to **Settings → Environment Variables** and add:
+
+| Variable | Value |
+|---|---|
+| `DATABASE_URL` | The **direct** Neon connection string (not the pooler URL) |
+| `NEXTAUTH_SECRET` | A strong random secret (generate with `openssl rand -base64 32`) |
+
+---
+
+## 4. Run Prisma Schema Push
+
+### First-time local setup
+
+After setting your `DATABASE_URL`, push the schema to your Neon database:
 
 ```bash
 npx prisma db push
 ```
-If you are tracking migrations, use this instead:
+
+This will create all tables (`users`, `goods`, `sale_entries`, `investment_logs`, `login_sessions`) in your Neon database.
+
+If you prefer to track your schema history with migration files, use this instead:
 
 ```bash
-npx prisma migrate dev
+npx prisma migrate dev --name init
 ```
 
-Important: `migrate dev` should use the direct Neon connection string, not the pooled `-pooler` URL.
+> **Important:** `migrate dev` must use the **direct** connection string, not the pooled `-pooler` URL. If Prisma reports schema drift on first-time setup, it usually means the database already has tables from a previous attempt. For a fresh database with no data to preserve, run `npx prisma migrate reset`. To preserve existing data, use `npx prisma db push` or create a baseline migration.
 
-If Prisma reports drift on a first-time setup, that usually means the Neon database already has tables but this repo does not yet have matching migration files. For a brand-new database with no data to keep, create a fresh empty database or use `npx prisma migrate reset`. If you need to preserve data, do not reset the schema; use `npx prisma db push` or create a baseline migration instead.
+### Vercel (production) — automatic
 
-## 5. Generate Prisma Client
-Finally, ensure your Prisma client is up to date:
+The `package.json` build script is pre-configured to automatically push schema changes to your Neon database on every Vercel deployment:
+
+```json
+"build": "prisma generate && prisma db push --accept-data-loss && next build"
+```
+
+This means you **do not** need to manually run migrations after deploying. Every `git push` to `main` will:
+1. Generate the Prisma Client
+2. Push the latest schema to your Neon database
+3. Build the Next.js application
+
+---
+
+## 5. Generate the Prisma Client
+
+When developing locally, ensure the Prisma Client is up to date after any schema change:
 
 ```bash
 npx prisma generate
 ```
 
-Your app is now successfully connected to the Neon database!
+This is run automatically as part of `npm install` (via the `postinstall` script) and as part of the build command.
+
+---
+
+## 6. Useful Prisma Commands
+
+```bash
+npx prisma studio          # Open a visual database browser at localhost:5555
+npx prisma db push         # Push schema changes without creating a migration file
+npx prisma migrate dev     # Create a migration file and apply it (requires direct URL)
+npx prisma migrate reset   # Drop and recreate the database (WARNING: deletes all data)
+npx prisma generate        # Regenerate the Prisma Client after schema changes
+```
+
+---
+
+Your application is now connected to Neon. Visit [http://localhost:3000](http://localhost:3000) and register your first user to get started.
