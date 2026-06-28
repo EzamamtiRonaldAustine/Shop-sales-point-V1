@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { auth } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { changePasswordSchema } from "@/lib/validations";
+import { ZodError } from "zod";
 
 /**
  * POST /api/auth/change-password
@@ -24,19 +26,13 @@ export async function POST(req: Request) {
     // 1. Verify the user is authenticated via NextAuth
     const session = await auth();
     if (!session?.user?.id) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ message: "Unauthorized access. Please log in." }, { status: 401 });
     }
 
     const body = await req.json();
-    const { currentPassword, password } = body;
-
-    // 2. Validate the new password length
-    if (!password || password.length < 6) {
-      return NextResponse.json(
-        { message: "New password must be at least 6 characters." },
-        { status: 400 }
-      );
-    }
+    
+    // 2. Validate using Zod schema
+    const { currentPassword, password } = changePasswordSchema.parse(body);
 
     // 3. Fetch the user from the database to verify the current password
     const dbUser = await db.user.findUnique({
@@ -45,7 +41,7 @@ export async function POST(req: Request) {
     });
 
     if (!dbUser) {
-      return NextResponse.json({ message: "User not found." }, { status: 404 });
+      return NextResponse.json({ message: "User account not found." }, { status: 404 });
     }
 
     // 4. If this is a voluntary change (not a forced first-login reset),
@@ -53,14 +49,14 @@ export async function POST(req: Request) {
     if (!dbUser.requiresPasswordChange) {
       if (!currentPassword) {
         return NextResponse.json(
-          { message: "Current password is required." },
+          { message: "Current password is required to change your password." },
           { status: 400 }
         );
       }
 
       if (!dbUser.passwordHash) {
         return NextResponse.json(
-          { message: "No password set for this account." },
+          { message: "No password is set for this account." },
           { status: 400 }
         );
       }
@@ -72,7 +68,7 @@ export async function POST(req: Request) {
 
       if (!isCurrentPasswordValid) {
         return NextResponse.json(
-          { message: "Current password is incorrect." },
+          { message: "The current password provided is incorrect." },
           { status: 400 }
         );
       }
@@ -106,6 +102,16 @@ export async function POST(req: Request) {
     );
   } catch (error) {
     console.error("Password change error:", error);
-    return NextResponse.json({ message: "Something went wrong." }, { status: 500 });
+    
+    // Handle validation errors from Zod
+    if (error instanceof ZodError) {
+      return NextResponse.json(
+        { message: "Invalid password data provided.", errors: error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+    
+    return NextResponse.json({ message: "An unexpected error occurred while updating the password." }, { status: 500 });
   }
 }
+

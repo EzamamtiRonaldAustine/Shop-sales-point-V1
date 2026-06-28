@@ -147,7 +147,12 @@ function ChangePasswordSection() {
         reset();
         setOpen(false);
       } else {
-        setMessage({ type: "error", text: data.message ?? "Failed to update password." });
+        let errorMsg = data.message ?? "Failed to update password.";
+        if (data.errors) {
+          const fieldErrors = Object.values(data.errors).flat().join(" ");
+          errorMsg = `${errorMsg} ${fieldErrors}`;
+        }
+        setMessage({ type: "error", text: errorMsg });
       }
     } catch {
       setMessage({ type: "error", text: "An unexpected error occurred." });

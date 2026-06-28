@@ -49,3 +49,11 @@ export const saleSchema = z.object({
   note: z.string().optional(),
 });
 export type SaleInput = z.infer<typeof saleSchema>;
+
+// Schema for changing password. It supports both the voluntary flow (requires currentPassword) and forced reset flow.
+export const changePasswordSchema = z.object({
+  currentPassword: z.string().optional(),
+  password: z.string().min(6, "New password must be at least 6 characters long"),
+});
+export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+
