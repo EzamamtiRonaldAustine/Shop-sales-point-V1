@@ -25,7 +25,12 @@ interface ProfileClientProps {
   } | null;
 }
 
-// ─── Re-usable status banner ────────────────────────────────────────────────
+/**
+ * StatusBanner Component
+ * 
+ * Reusable UI component to display success or error messages cleanly.
+ * Automatically adapts colors based on the message type (success/error).
+ */
 function StatusBanner({
   message,
 }: {
@@ -51,7 +56,12 @@ function StatusBanner({
   );
 }
 
-// ─── Password visibility toggle input ───────────────────────────────────────
+/**
+ * PasswordInput Component
+ * 
+ * A specialized input field for passwords that includes a built-in visibility toggle.
+ * Enhances UX by allowing users to verify the password they typed.
+ */
 function PasswordInput({
   id,
   label,
@@ -100,7 +110,13 @@ function PasswordInput({
   );
 }
 
-// ─── Change Password Card ────────────────────────────────────────────────────
+/**
+ * ChangePasswordSection Component
+ * 
+ * An interactive, accordion-style component that allows users to change their password voluntarily.
+ * It manages form state, handles client-side validation (matching passwords, minimum length),
+ * visualizes password strength, and securely communicates with the backend API.
+ */
 function ChangePasswordSection() {
   const [open, setOpen] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
@@ -285,7 +301,15 @@ function ChangePasswordSection() {
   );
 }
 
-// ─── Main Profile Client ─────────────────────────────────────────────────────
+/**
+ * ProfileClient Component
+ * 
+ * The main client-side orchestrator for the profile page.
+ * It manages the user's avatar upload flow (including client-side image compression),
+ * displays user details, and houses the ChangePasswordSection.
+ * 
+ * @param {Object} props.user - The currently authenticated user's details retrieved from the database.
+ */
 export default function ProfileClient({ user }: ProfileClientProps) {
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
