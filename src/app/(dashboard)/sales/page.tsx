@@ -3,7 +3,7 @@
 // The profit from each sale is calculated and displayed after logging a sale.
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { saleSchema, type SaleInput } from "@/lib/validations";
@@ -32,6 +32,17 @@ export default function SalesPage() {
   const quantitySold = watch("quantity");
   
   const selectedGood = goods.find((g) => g.id === selectedGoodId);
+
+  const groupedGoods = useMemo(() => {
+    const sorted = [...goods].sort((a, b) => a.name.localeCompare(b.name));
+    const groups: Record<string, Good[]> = {};
+    sorted.forEach(good => {
+      const key = good.unitType || "Unspecified";
+      if (!groups[key]) groups[key] = [];
+      groups[key].push(good);
+    });
+    return groups;
+  }, [goods]);
 
   useEffect(() => {
     fetchGoods();
@@ -112,10 +123,14 @@ export default function SalesPage() {
                 className="flex h-10 w-full rounded-md border border-gray-300 bg-white dark:bg-slate-950 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 dark:border-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-shadow"
               >
                 <option value="">-- Select Item to Sell --</option>
-                {goods.map((good) => (
-                  <option key={good.id} value={good.id}>
-                    {good.name} {good.packagingDesc ? `(${good.packagingDesc})` : ""} - Stock: {good.currentStock}
-                  </option>
+                {Object.entries(groupedGoods).map(([group, groupGoods]) => (
+                  <optgroup key={group} label={`--- ${group} ---`}>
+                    {groupGoods.map((good) => (
+                      <option key={good.id} value={good.id}>
+                        {good.name} {good.packagingDesc ? `(${good.packagingDesc})` : ""} - Stock: {good.currentStock}
+                      </option>
+                    ))}
+                  </optgroup>
                 ))}
               </select>
               {errors.goodId && <span className="text-sm text-red-500">{errors.goodId.message}</span>}
