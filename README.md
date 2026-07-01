@@ -49,9 +49,10 @@ The application is **free to build and deploy** using the free tiers of Vercel, 
 - Set cost price (what you pay) and selling price (what you charge) per unit
 - Track current stock levels — automatically decremented on each sale
 - View the full goods catalogue with current margins
+- **Sort** inventory by name, price, stock, or margin, and **group** goods by unit type or packaging
 
 ### Daily Sales Entry
-- Log sales for any date — select a good, enter quantity sold
+- Log sales for any date — select a good (grouped by unit type and sorted alphabetically), enter quantity sold
 - Revenue is auto-calculated from quantity × selling price
 - Edit or delete individual sale entries
 - View all sales for a given day on one screen
