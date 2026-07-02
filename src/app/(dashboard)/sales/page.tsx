@@ -144,7 +144,7 @@ export default function SalesPage() {
                  </div>
                  <div>
                     <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Selling Price</p>
-                    <p className="text-lg font-bold text-green-600 dark:text-green-400">${selectedGood.sellingPrice}</p>
+                    <p className="text-lg font-bold text-green-600 dark:text-green-400">UGX {selectedGood.sellingPrice}</p>
                  </div>
               </div>
             )}
@@ -170,7 +170,7 @@ export default function SalesPage() {
             {selectedGood && quantitySold > 0 && (
               <div className="flex justify-between items-center p-3 bg-green-50 dark:bg-green-950/30 rounded border border-green-100 dark:border-green-900/50 text-sm transition-colors">
                  <span className="font-medium text-green-800 dark:text-green-400">Auto-calculated Revenue:</span>
-                 <span className="font-bold text-green-700 dark:text-green-300">${(selectedGood.sellingPrice * (quantitySold || 0)).toFixed(2)}</span>
+                 <span className="font-bold text-green-700 dark:text-green-300">UGX {(selectedGood.sellingPrice * (quantitySold || 0)).toFixed(2)}</span>
               </div>
             )}
 
@@ -186,7 +186,7 @@ export default function SalesPage() {
             {success && (
               <div className="text-green-800 dark:text-green-400 text-sm font-medium bg-green-100 dark:bg-green-950/50 p-4 rounded-md flex flex-col gap-1 transition-colors">
                 <div className="flex items-center"><ShoppingCart className="w-4 h-4 mr-2"/> Sale logged successfully! Stock deducted.</div>
-                {lastProfit !== null && <div className="text-green-700 dark:text-green-500 ml-6 text-xs">Profit generated from this sale: <strong>${lastProfit.toFixed(2)}</strong></div>}
+                {lastProfit !== null && <div className="text-green-700 dark:text-green-500 ml-6 text-xs">Profit generated from this sale: <strong>UGX {lastProfit.toFixed(2)}</strong></div>}
               </div>
             )}
 

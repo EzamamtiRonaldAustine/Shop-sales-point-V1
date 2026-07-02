@@ -103,7 +103,7 @@ export default function InvestmentPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <Input
-                label="Amount Spent ($)"
+                label="Amount Spent (UGX)"
                 type="number"
                 step="0.01"
                 placeholder="e.g. 150.00"

@@ -91,7 +91,7 @@ export function GoodForm() {
 
           <div className="grid grid-cols-2 gap-4">
             <Input
-              label={`Cost Price per ${selectedUnitType.toLowerCase()} ($)`}
+              label={`Cost Price per ${selectedUnitType.toLowerCase()} (UGX)`}
               type="number"
               step="0.01"
               placeholder="0.00"
@@ -100,7 +100,7 @@ export function GoodForm() {
             />
 
             <Input
-              label={`Selling Price per ${selectedUnitType.toLowerCase()} ($)`}
+              label={`Selling Price per ${selectedUnitType.toLowerCase()} (UGX)`}
               type="number"
               step="0.01"
               placeholder="0.00"

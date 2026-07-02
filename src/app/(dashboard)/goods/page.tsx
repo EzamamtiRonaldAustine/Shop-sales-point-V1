@@ -182,11 +182,11 @@ export default function GoodsCatalogue() {
                           <td className="px-6 py-4 text-right font-semibold text-gray-900 dark:text-gray-100">
                             {good.currentStock}
                           </td>
-                          <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">${Number(good.costPrice).toFixed(2)}</td>
-                          <td className="px-6 py-4 text-right text-gray-900 dark:text-gray-100 font-medium">${Number(good.sellingPrice).toFixed(2)}</td>
+                          <td className="px-6 py-4 text-right text-gray-500 dark:text-gray-400">UGX {Number(good.costPrice).toFixed(2)}</td>
+                          <td className="px-6 py-4 text-right text-gray-900 dark:text-gray-100 font-medium">UGX {Number(good.sellingPrice).toFixed(2)}</td>
                           <td className="px-6 py-4 text-right">
                             <span className={`font-medium ${margin >= 0 ? "text-green-600 dark:text-green-400" : "text-red-600 dark:text-red-400"}`}>
-                              ${margin.toFixed(2)} ({marginPercent.toFixed(1)}%)
+                              UGX {margin.toFixed(2)} ({marginPercent.toFixed(1)}%)
                             </span>
                           </td>
                           <td className="px-6 py-4 text-center">

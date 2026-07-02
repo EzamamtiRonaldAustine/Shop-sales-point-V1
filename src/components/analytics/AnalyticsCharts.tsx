@@ -44,7 +44,7 @@ export default function AnalyticsCharts({
             <DollarSign className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalRevenue.toFixed(2)}</div>
+            <div className="text-2xl font-bold">UGX {totalRevenue.toFixed(2)}</div>
             <p className="text-xs text-gray-500 mt-1">From all recorded sales</p>
           </CardContent>
         </Card>
@@ -55,7 +55,7 @@ export default function AnalyticsCharts({
             <TrendingUp className="h-4 w-4 text-gray-500" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalInvestment.toFixed(2)}</div>
+            <div className="text-2xl font-bold">UGX {totalInvestment.toFixed(2)}</div>
             <p className="text-xs text-gray-500 mt-1">Restocks and capital spent</p>
           </CardContent>
         </Card>
@@ -67,7 +67,7 @@ export default function AnalyticsCharts({
           </CardHeader>
           <CardContent>
             <div className={`text-2xl font-bold ${netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              ${Math.abs(netProfit).toFixed(2)} {netProfit >= 0 ? '(Profit)' : '(Loss)'}
+              UGX {Math.abs(netProfit).toFixed(2)} {netProfit >= 0 ? '(Profit)' : '(Loss)'}
             </div>
             <p className="text-xs text-gray-500 mt-1">Revenue vs Investments</p>
           </CardContent>
@@ -99,10 +99,10 @@ export default function AnalyticsCharts({
                       fontSize={12}
                       tickLine={false}
                       axisLine={false}
-                      tickFormatter={(value) => `$${value}`}
+                      tickFormatter={(value) => `UGX ${value}`}
                     />
                     <RechartsTooltip 
-                      formatter={(value: any) => [`$${Number(value).toFixed(2)}`, "Revenue"]}
+                      formatter={(value: any) => [`UGX ${Number(value).toFixed(2)}`, "Revenue"]}
                       labelFormatter={(label) => `Date: ${label}`}
                     />
                     <Line 
@@ -145,7 +145,7 @@ export default function AnalyticsCharts({
                       width={100}
                     />
                     <RechartsTooltip 
-                      formatter={(value: any) => [`$${Number(value).toFixed(2)}`, "Revenue"]}
+                      formatter={(value: any) => [`UGX ${Number(value).toFixed(2)}`, "Revenue"]}
                     />
                     <Bar dataKey="totalRevenue" fill="#3b82f6" radius={[0, 4, 4, 0]} />
                   </BarChart>
